@@ -17,6 +17,7 @@ public class RedisTestController {
 
     @GetMapping("/test/redis")
     public String testRedis() {
+        System.out.println("gigigigi");
         redis.opsForValue().set("ping", "pong", Duration.ofSeconds(5));
         String resp = redis.opsForValue().get("ping");
         return "Redis replied: " + resp;
