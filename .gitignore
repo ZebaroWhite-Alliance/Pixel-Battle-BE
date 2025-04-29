@@ -41,5 +41,5 @@ out/
 
 # Environment files
 .env
-application-dev.properties
+iapplication-dev.properties
 application-prod.properties

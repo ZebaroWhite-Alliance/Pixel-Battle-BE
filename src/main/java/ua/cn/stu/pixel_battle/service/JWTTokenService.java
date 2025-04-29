@@ -13,7 +13,7 @@ import java.util.Date;
 @Service
 public class JWTTokenService {
 
-    @Value("${jwt.secret}")
+    @Value("sekret-key")
     private String secretKey;
 
     private final long expirationMs = 86400000;
