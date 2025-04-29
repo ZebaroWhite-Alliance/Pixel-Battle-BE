@@ -22,6 +22,18 @@ public class SecurityConfig {
     private final JWTTokenService jwtTokenService;
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] PUBLIC_URLS = {
+            "/auth/register",
+            "/auth/login",
+            "/actuator/health",
+            "/pixel",
+            "/pixel/**"
+    };
+
+    private static final String[] PROTECTED_URLS = {
+            "/pixel/change",
+            "/current-user"
+    };
     public SecurityConfig(JWTTokenService jwtTokenService,
                           JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtTokenService = jwtTokenService;
@@ -31,17 +43,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/pixel", "/pixel/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/pixel/change").permitAll()
+                .csrf().disable()
+                .authorizeRequests(auth -> auth
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(PROTECTED_URLS).authenticated()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

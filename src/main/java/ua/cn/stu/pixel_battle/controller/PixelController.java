@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ua.cn.stu.pixel_battle.dto.PixelChangeRequest;
 import ua.cn.stu.pixel_battle.dto.PixelResponse;
+import ua.cn.stu.pixel_battle.security.CustomUserDetails;
 import ua.cn.stu.pixel_battle.service.JWTTokenService;
 import ua.cn.stu.pixel_battle.service.PixelService;
 import ua.cn.stu.pixel_battle.service.AuthService;
@@ -28,12 +30,10 @@ public class PixelController {
     public List<PixelResponse> getAllPixels() {
         return pixelService.getAllPixels();
     }
-    @PostMapping("/change")
-    public ResponseEntity<?> changePixel(@RequestParam int x,
-                                         @RequestParam int y,
-                                         @RequestParam String color,
-                                         @AuthenticationPrincipal Long userId) {
-        pixelService.changePixel(x, y, color, userId);
+    @PostMapping("/pixel-battle/api/v1/change")
+    public ResponseEntity<Void> changePixel(@RequestBody PixelChangeRequest request,
+                                            @AuthenticationPrincipal CustomUserDetails user) {
+        pixelService.changePixel(request.getX(), request.getY(), request.getColor(), user.getId());
         return ResponseEntity.ok().build();
     }
 }
