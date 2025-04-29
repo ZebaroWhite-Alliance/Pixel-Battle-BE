@@ -52,26 +52,31 @@ public class PixelService {
         if (x < 0 || x >= FIELD_WIDTH || y < 0 || y >= FIELD_HEIGHT) {
             throw new IllegalArgumentException("Coordinates out of bounds");
         }
-        String rateKey = USER_RATE_KEY_PREFIX + userId;
-        Boolean allowed = stringRedisTemplate.opsForValue()
-                .setIfAbsent(rateKey, "1", 1, TimeUnit.MINUTES);
-        if (Boolean.FALSE.equals(allowed)) {
-            throw new RateLimitException("you can change pixel 1 time in minute");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            String rateKey = USER_RATE_KEY_PREFIX + userId;
+            Boolean allowed = stringRedisTemplate.opsForValue()
+                    .setIfAbsent(rateKey, "1", 1, TimeUnit.MINUTES);
+
+            if (Boolean.FALSE.equals(allowed)) {
+                throw new RateLimitException("You can change pixel only once per minute");
+            }
         }
 
         String key = "pixel:" + x + ":" + y;
         Pixel old = redisTemplate.opsForValue().get(key);
         String oldColor = old != null ? old.getColor() : "#FFFFFF";
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("user not found: " + userId));
+        PixelHistory history = new PixelHistory(x, y, oldColor, newColor, user);
+        pixelHistoryRepository.save(history);
 
-        PixelHistory h = new PixelHistory(x, y, oldColor, newColor, user);
-        pixelHistoryRepository.save(h);
-
-        Pixel p = new Pixel(x, y, newColor);
-        redisTemplate.opsForValue().set(key, p);
+        Pixel newPixel = new Pixel(x, y, newColor);
+        redisTemplate.opsForValue().set(key, newPixel);
     }
+
 
     public List<PixelResponse> getAllPixels() {
         Set<String> keys = redisTemplate.keys("pixel:*");

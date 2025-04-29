@@ -65,6 +65,7 @@ public class JWTTokenService {
     public CustomUserDetails loadUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return CustomUserDetails.fromUser(user);
+        return new CustomUserDetails(user);
+
     }
 }

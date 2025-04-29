@@ -13,25 +13,30 @@ public class CustomUserDetails implements UserDetails {
     private final Long id;
     private final String username;
     private final String password;
+    private final String role;
 
-    public CustomUserDetails(Long id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    public CustomUserDetails(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.password = user.getPasswordHash();
+        this.role = user.getRole();
     }
 
     public Long getId() {
         return id;
     }
 
-    public static CustomUserDetails fromUser(User user) {
-        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPasswordHash());
+
+    public String getRole() {
+        return role;
     }
+
+
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

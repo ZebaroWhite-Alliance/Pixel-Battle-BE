@@ -15,7 +15,7 @@ import ua.cn.stu.pixel_battle.service.AuthService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pixel")
+@RequestMapping("/pixel-battle/api/v1/pixel")
 public class PixelController {
 
     private final PixelService pixelService;
@@ -30,7 +30,7 @@ public class PixelController {
     public List<PixelResponse> getAllPixels() {
         return pixelService.getAllPixels();
     }
-    @PostMapping("/pixel-battle/api/v1/change")
+    @PostMapping("/change")
     public ResponseEntity<Void> changePixel(@RequestBody PixelChangeRequest request,
                                             @AuthenticationPrincipal CustomUserDetails user) {
         pixelService.changePixel(request.getX(), request.getY(), request.getColor(), user.getId());
