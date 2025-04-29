@@ -11,7 +11,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(name = "username",nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(name = "password_hash", nullable = false)
@@ -22,6 +22,17 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private String role = "USER";
+
+    @Column(name = "pixel_changes_count", nullable = false)
+    private int pixelChangesCount = 0;
+
+    public int getPixelChangesCount() {
+        return pixelChangesCount;
+    }
+
+    public void setPixelChangesCount(int pixelChangesCount) {
+        this.pixelChangesCount = pixelChangesCount;
+    }
 
     public User() {
     }
@@ -68,5 +79,9 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void incrementPixelChanges() {
+        this.pixelChangesCount++;
     }
 }

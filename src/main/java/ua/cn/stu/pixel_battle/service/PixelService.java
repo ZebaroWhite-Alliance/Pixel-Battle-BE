@@ -65,7 +65,8 @@ public class PixelService {
                 throw new RateLimitException("You can change pixel only once per minute");
             }
         }
-
+        user.incrementPixelChanges();
+        userRepository.save(user);
         String key = "pixel:" + x + ":" + y;
         Pixel old = redisTemplate.opsForValue().get(key);
         String oldColor = old != null ? old.getColor() : "#FFFFFF";

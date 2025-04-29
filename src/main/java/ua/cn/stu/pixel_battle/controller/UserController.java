@@ -12,7 +12,7 @@ import ua.cn.stu.pixel_battle.service.UserService;
 
 
 @RestController
-@RequestMapping("/pixel-battle/api/v1")
+@RequestMapping("/pixel-battle/api/v1/user")
 
 public class UserController {
     private final UserService userService;
@@ -20,10 +20,10 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/current-user")
+    @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails != null) {
-            UserResponse response = new UserResponse( userDetails.getId(),userDetails.getUsername());
+            UserResponse response = new UserResponse( userDetails.getId(),userDetails.getUsername(), userDetails.getPixelChangesCount());
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");

@@ -3,12 +3,13 @@ package ua.cn.stu.pixel_battle.dto;
 public class UserResponse {
     private Long userId;
     private String username;
+    private int pixelChangesCount;
 
 
-
-    public UserResponse(Long userId, String username) {
+    public UserResponse(Long userId, String username, int pixelChangesCount) {
         this.userId = userId;
         this.username = username;
+        this.pixelChangesCount = pixelChangesCount;
 
 
     }
@@ -31,4 +32,11 @@ public class UserResponse {
         this.userId = userId;
     }
 
+    public int getPixelChangesCount() {
+        return pixelChangesCount;
+    }
+
+    public void setPixelChangesCount(int pixelChangesCount) {
+        this.pixelChangesCount = pixelChangesCount;
+    }
 }

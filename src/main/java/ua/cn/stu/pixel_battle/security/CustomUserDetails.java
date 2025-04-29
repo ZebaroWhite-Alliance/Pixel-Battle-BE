@@ -14,12 +14,14 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final String role;
+    private final int pixelChangesCount;
 
     public CustomUserDetails(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPasswordHash();
         this.role = user.getRole();
+        this.pixelChangesCount = user.getPixelChangesCount();
     }
 
     public Long getId() {
@@ -32,7 +34,9 @@ public class CustomUserDetails implements UserDetails {
     }
 
 
-
+    public int getPixelChangesCount() {
+        return pixelChangesCount;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
