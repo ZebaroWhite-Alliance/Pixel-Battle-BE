@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class PixelService {
@@ -74,7 +75,7 @@ public class PixelService {
         PixelHistory history = new PixelHistory(x, y, oldColor, newColor, user);
         pixelHistoryRepository.save(history);
 
-        Pixel newPixel = new Pixel(x, y, newColor);
+        Pixel newPixel = new Pixel(x, y, newColor, user.getUsername());
         redisTemplate.opsForValue().set(key, newPixel);
     }
 
@@ -84,7 +85,7 @@ public class PixelService {
         return keys.stream()
                 .map(k -> redisTemplate.opsForValue().get(k))
                 .filter(Objects::nonNull)
-                .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor()))
-                .toList();
+                .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor(), p.getUsername()))
+                .collect(Collectors.toList());
     }
 }

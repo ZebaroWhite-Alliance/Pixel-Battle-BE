@@ -6,15 +6,20 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "pixel_history")
 public class PixelHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int x;
+    @Column(nullable = false)
     private int y;
     private String oldColor;
+
+    @Column(nullable = false)
     private String newColor;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,11 +34,15 @@ public class PixelHistory {
         this.oldColor = oldColor;
         this.newColor = newColor;
         this.user = user;
-        this.changedAt = LocalDateTime.now();
     }
 
     public PixelHistory() {
 
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.changedAt = LocalDateTime.now();
     }
 
     public Long getId() {

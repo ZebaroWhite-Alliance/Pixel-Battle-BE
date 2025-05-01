@@ -8,6 +8,8 @@ import java.util.List;
 @Repository
 public interface PixelHistoryRepository extends JpaRepository<PixelHistory, Long> {
 
-    List<PixelHistory> findByXAndY(int x, int y);
     List<PixelHistory> findByUserId(Long userId);
+    List<PixelHistory> findAllByOrderByIdAsc();
+    List<PixelHistory> findByIdGreaterThanOrderByIdAsc(Long id);
+
 }

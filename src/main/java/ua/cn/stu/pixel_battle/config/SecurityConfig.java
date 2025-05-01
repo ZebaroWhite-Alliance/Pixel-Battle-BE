@@ -27,12 +27,19 @@ public class SecurityConfig {
             "/pixel-battle/api/v1/auth/login",
             "/pixel-battle/api/v1/actuator/health",
             "/pixel-battle/api/v1/pixel",
-            "/pixel-battle/api/v1/pixel/**"
+            "/pixel-battle/api/v1/pixel/**",
+            "/pixel-battle/api/v1/history",
+            "/pixel-battle/api/v1/history/**",
+            "/ws/**",
+            "/topic/**",
+            "/app/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
 
     private static final String[] PROTECTED_URLS = {
             "/pixel-battle/api/v1/pixel/change",
-            "/pixel-battle/api/v1/current-user"
+            "/pixel-battle/api/v1/current-user",
     };
     public SecurityConfig(JWTTokenService jwtTokenService,
                           JWTAuthenticationFilter jwtAuthenticationFilter) {
