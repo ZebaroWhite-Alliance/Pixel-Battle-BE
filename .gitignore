@@ -43,3 +43,8 @@ out/
 .env
 iapplication-dev.properties
 application-prod.properties
+
+
+#db and redis
+/db_data
+/redis_data

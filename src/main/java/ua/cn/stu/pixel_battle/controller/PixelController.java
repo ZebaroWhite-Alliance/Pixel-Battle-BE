@@ -13,7 +13,7 @@ import ua.cn.stu.pixel_battle.service.PixelService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pixel-battle/api/v1/pixel")
+@RequestMapping("/api/v1/pixel")
 public class PixelController {
 
     private final PixelService pixelService;

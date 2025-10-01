@@ -13,7 +13,7 @@ import ua.cn.stu.pixel_battle.service.PixelHistoryService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pixel-battle/api/v1/history")
+@RequestMapping("/api/v1/history")
 public class PixelHistoryController {
 
     private final PixelHistoryService service;

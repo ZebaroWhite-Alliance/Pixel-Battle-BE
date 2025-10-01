@@ -1,29 +1,57 @@
-version: '3.8'
-
 services:
-  db:
-    image: mysql:8.0
-    container_name: pixel-db
-    restart: always
+  pixel-battle-db:
+    image: mysql:8
+    container_name: pixel-battle-db
+    restart: unless-stopped
+    expose:
+      - "3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      retries: 10
     environment:
-      MYSQL_ROOT_PASSWORD: QWErty123456***
-      MYSQL_DATABASE: pixel_battle
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: qwerty123456*
-    ports:
-      - '3306:3306'
-    volumes:
-      - db_data:/var/lib/mysql
+      - MYSQL_HOST
+      - MYSQL_DATABASE
+      - MYSQL_PASSWORD
+      - MYSQL_USER
+      - MYSQL_ROOT_PASSWORD
 
-  redis:
+  pixel-battle-redis:
     image: redis:7-alpine
-    container_name: pixel-redis
-    restart: always
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
+    container_name: pixel-battle-redis
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
 
-volumes:
-  db_data:
-  redis_data:
+      retries: 10
+    environment:
+      - REDIS_HOST
+      - REDIS_PORT
+    expose:
+      - "6379"
+    volumes:
+      - ./redis_data:/data
+
+  pixel-battle-be:
+    build: .
+    container_name: pixel-battle-be
+    restart: unless-stopped
+    depends_on:
+      pixel-battle-db:
+        condition: service_healthy
+      pixel-battle-redis:
+        condition: service_healthy
+
+    environment:
+      - JWT_SECRET
+      - SPRING_PROFILES_ACTIVE
+      - MYSQL_HOST
+      - MYSQL_DATABASE
+      - MYSQL_PASSWORD
+      - MYSQL_USER
+      - MYSQL_ROOT_PASSWORD
+    expose:
+      - "8080"

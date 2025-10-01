@@ -23,23 +23,23 @@ public class SecurityConfig {
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] PUBLIC_URLS = {
-            "/pixel-battle/api/v1/auth/register",
-            "/pixel-battle/api/v1/auth/login",
-            "/pixel-battle/api/v1/actuator/health",
-            "/pixel-battle/api/v1/pixel",
-            "/pixel-battle/api/v1/pixel/**",
-            "/pixel-battle/api/v1/history",
-            "/pixel-battle/api/v1/history/**",
+            "/swagger-ui/**",
+            "/api/v1/auth/register",
+            "/api/v1/auth/login",
+            "/api/v1/actuator/health",
+            "/api/v1/pixel",
+            "/api/v1/pixel/**",
+            "/api/v1/history",
+            "/api/v1/history/**",
             "/ws/**",
             "/topic/**",
             "/app/**",
-            "/swagger-ui/**",
             "/v3/api-docs/**"
     };
 
     private static final String[] PROTECTED_URLS = {
-            "/pixel-battle/api/v1/pixel/change",
-            "/pixel-battle/api/v1/current-user",
+            "/api/v1/pixel/change",
+            "/api/v1/current-user",
     };
     public SecurityConfig(JWTTokenService jwtTokenService,
                           JWTAuthenticationFilter jwtAuthenticationFilter) {
