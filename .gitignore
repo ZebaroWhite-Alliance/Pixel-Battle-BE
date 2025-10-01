@@ -48,3 +48,6 @@ application-prod.properties
 #db and redis
 /db_data
 /redis_data
+
+# Docker Compose override for local dev
+docker-compose.override.yaml

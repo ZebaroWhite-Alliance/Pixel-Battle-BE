@@ -12,6 +12,7 @@ import ua.cn.stu.pixel_battle.model.User;
 import ua.cn.stu.pixel_battle.repository.PixelHistoryRepository;
 import ua.cn.stu.pixel_battle.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -55,12 +56,12 @@ public class PixelService {
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+            .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
         if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             String rateKey = USER_RATE_KEY_PREFIX + userId;
             Boolean allowed = stringRedisTemplate.opsForValue()
-                    .setIfAbsent(rateKey, "1", 1, TimeUnit.MINUTES);
+                .setIfAbsent(rateKey, "1", 1, TimeUnit.MINUTES);
 
             if (Boolean.FALSE.equals(allowed)) {
                 throw new RateLimitException("You can change pixel only once per minute");
@@ -81,11 +82,25 @@ public class PixelService {
 
 
     public List<PixelResponse> getAllPixels() {
-        Set<String> keys = redisTemplate.keys("pixel:*");
-        return keys.stream()
-                .map(k -> redisTemplate.opsForValue().get(k))
+        try {
+            Set<String> keys = redisTemplate.keys("pixel:*");
+            if (keys == null) {
+                return Collections.emptyList();
+            }
+
+            return keys.stream()
+                .map(k -> {
+                    try {
+                        return redisTemplate.opsForValue().get(k);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to get key " + k + " from Redis: " + e.getMessage(), e);
+                    }
+                })
                 .filter(Objects::nonNull)
                 .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor(), p.getUsername()))
                 .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to connect to Redis: " + e.getMessage(), e);
+        }
     }
 }

@@ -21,15 +21,14 @@ services:
   pixel-battle-redis:
     image: redis:7-alpine
     container_name: pixel-battle-redis
-    restart: unless-stopped
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
-
-      retries: 10
+      retries: 5
+    restart: unless-stopped
     environment:
-      - REDIS_HOST
-      - REDIS_PORT
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     expose:
       - "6379"
     volumes:
@@ -37,6 +36,7 @@ services:
 
   pixel-battle-be:
     build: .
+    image: ghcr.io/zebarowhite-alliance/pixel-battle-be:latest
     container_name: pixel-battle-be
     restart: unless-stopped
     depends_on:
@@ -46,12 +46,14 @@ services:
         condition: service_healthy
 
     environment:
-      - JWT_SECRET
-      - SPRING_PROFILES_ACTIVE
-      - MYSQL_HOST
-      - MYSQL_DATABASE
-      - MYSQL_PASSWORD
-      - MYSQL_USER
-      - MYSQL_ROOT_PASSWORD
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     expose:
       - "8080"
