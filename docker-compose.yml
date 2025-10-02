@@ -1,22 +1,22 @@
 services:
   pixel-battle-db:
-    image: mysql:8
+    image: postgres:16-alpine
+
     container_name: pixel-battle-db
     restart: unless-stopped
     expose:
-      - "3306"
+      - "5432"
     volumes:
-      - ./db_data:/var/lib/mysql
+      - pixel-battle-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       retries: 10
     environment:
-      - MYSQL_HOST
-      - MYSQL_DATABASE
-      - MYSQL_PASSWORD
-      - MYSQL_USER
-      - MYSQL_ROOT_PASSWORD
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
 
   pixel-battle-redis:
     image: redis:7-alpine
@@ -32,7 +32,7 @@ services:
     expose:
       - "6379"
     volumes:
-      - ./redis_data:/data
+      - pixel-battle-redis-data:/data
 
   pixel-battle-be:
     build: .
@@ -48,12 +48,19 @@ services:
     environment:
       JWT_SECRET: ${JWT_SECRET}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+      # PostgreSQL — Spring Datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # Redis
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+
     expose:
       - "8080"
+
+volumes:
+  pixel-battle-db-data:
+  pixel-battle-redis-data:

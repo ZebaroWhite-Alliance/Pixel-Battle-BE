@@ -6,15 +6,6 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-
-  flyway:
-    enabled: true
-
-
 
 management:
   endpoints:
