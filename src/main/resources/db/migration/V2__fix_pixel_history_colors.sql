@@ -1,0 +1,3 @@
+ALTER TABLE pixel_history
+ALTER COLUMN old_color TYPE VARCHAR(7),
+    ALTER COLUMN new_color TYPE VARCHAR(7);
