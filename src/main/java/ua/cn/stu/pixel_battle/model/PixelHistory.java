@@ -26,6 +26,8 @@ public class PixelHistory {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "changed_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime changedAt;
 
     public PixelHistory(int x, int y, String oldColor, String newColor, User user) {
