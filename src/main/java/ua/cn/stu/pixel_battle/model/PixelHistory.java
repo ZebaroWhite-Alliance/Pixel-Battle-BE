@@ -19,7 +19,7 @@ public class PixelHistory {
     private int y;
     private String oldColor;
 
-    @Column(nullable = false)
+    @Column(name = "new_color", length = 7)
     private String newColor;
 
     @ManyToOne(fetch = FetchType.EAGER )
