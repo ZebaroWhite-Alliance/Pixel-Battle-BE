@@ -38,7 +38,7 @@ public class RefreshTokenService {
     return token;
   }
 
-  public Long verifyExpiration(RefreshToken token) {
+  public Long verifyExpiration(String  token) {
     ValueOperations<String, String> ops = redisTemplate.opsForValue();
     String userId = ops.get("refresh:" + token);
 
