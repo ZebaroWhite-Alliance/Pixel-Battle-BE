@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ua.cn.stu.pixel_battle.config.JwtProperties;
 import ua.cn.stu.pixel_battle.model.User;
 import ua.cn.stu.pixel_battle.repository.UserRepository;
 import ua.cn.stu.pixel_battle.security.CustomUserDetails;
@@ -17,18 +18,25 @@ import java.util.Date;
 @Service
 public class JWTTokenService {
 
-    @Value("sekret-key")
-    private String secretKey;
-
     private final UserRepository userRepository;
-    private final long expirationMs = 86400000;
+    private final String secretKey;
+    private final Algorithm algorithm;
+    private final long expirationMs;
 
-    public JWTTokenService(UserRepository userRepository) {
+
+    public JWTTokenService(UserRepository userRepository, JwtProperties jwtProperties) {
         this.userRepository = userRepository;
+        this.secretKey = jwtProperties.getSecret();
+        this.expirationMs = jwtProperties.getAccessTokenDurationMs();
+
+        if (this.secretKey == null || this.secretKey.isBlank()) {
+            throw new IllegalStateException("JWT secret is not configured. Set JWT_SECRET env or jwt.secret property.");
+        }
+        this.algorithm = Algorithm.HMAC256(this.secretKey);
     }
 
+
     public String createToken(String username, Long userId) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()
                 .withSubject(username)
                 .withClaim("userId", userId)

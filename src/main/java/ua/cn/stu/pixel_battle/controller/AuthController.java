@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ua.cn.stu.pixel_battle.dto.AuthRequest;
 import ua.cn.stu.pixel_battle.dto.AuthResponse;
 import ua.cn.stu.pixel_battle.dto.RegisterRequest;
+import ua.cn.stu.pixel_battle.model.RefreshToken;
 import ua.cn.stu.pixel_battle.service.AuthService;
 
 @RestController
@@ -26,14 +27,22 @@ public class AuthController {
         authService.register(req);
 
         AuthRequest authRequest = new AuthRequest(req.getUsername(), req.getPassword());
-        String token = authService.login(authRequest);
+        AuthResponse authResponse = authService.login(authRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest req) {
-        String token = authService.login(req);
-        return ResponseEntity.ok(new AuthResponse(token));
+        AuthResponse authResponse = authService.login(req);
+        return ResponseEntity.status(HttpStatus.OK).body(authResponse);
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody String refreshTokenStr) {
+        AuthResponse authResponse = authService.refreshToken(refreshTokenStr);
+        return ResponseEntity.ok(authResponse);
+    }
+
+
 }

@@ -1,7 +1,5 @@
 spring:
   application:
-    config:
-      import: "dotenv:./.env"
     name: pixel-battle
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
@@ -15,3 +13,5 @@ management:
 
 jwt:
   secret: ${JWT_SECRET}
+  access-token-duration-ms: 300000
+  refresh-token-duration-ms: 604800000
