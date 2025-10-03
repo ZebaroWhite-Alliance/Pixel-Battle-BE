@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ua.cn.stu.pixel_battle.dto.AuthRequest;
 import ua.cn.stu.pixel_battle.dto.AuthResponse;
 import ua.cn.stu.pixel_battle.dto.RegisterRequest;
-import ua.cn.stu.pixel_battle.model.RefreshToken;
 import ua.cn.stu.pixel_battle.service.AuthService;
 
 @RestController

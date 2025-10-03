@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ua.cn.stu.pixel_battle.dto.AuthRequest;
 import ua.cn.stu.pixel_battle.dto.AuthResponse;
 import ua.cn.stu.pixel_battle.dto.RegisterRequest;
-import ua.cn.stu.pixel_battle.model.RefreshToken;
 import ua.cn.stu.pixel_battle.model.User;
 import ua.cn.stu.pixel_battle.repository.UserRepository;
 
@@ -50,30 +49,25 @@ public class AuthService {
 
         refreshTokenService.deleteByUserId(user.getId());
 
-
         String accessToken = jwtTokenService.createToken(user.getUsername(), user.getId());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+        String refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-        return new AuthResponse(accessToken, refreshToken.getToken());
+        return new AuthResponse(accessToken, refreshToken);
     }
 
     public AuthResponse refreshToken(String refreshTokenStr) {
 
-        RefreshToken oldRefreshToken = refreshTokenService.findByToken(refreshTokenStr)
-            .map(token -> refreshTokenService.verifyExpiration(token))
+        Long userId = refreshTokenService.findByToken(refreshTokenStr)
             .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
 
-        refreshTokenService.delete(oldRefreshToken);
+        refreshTokenService.deleteByToken(refreshTokenStr);
 
-        String newAccessToken = jwtTokenService.createToken(
-            oldRefreshToken.getUser().getUsername(),
-            oldRefreshToken.getUser().getId()
-        );
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(
-            oldRefreshToken.getUser().getId()
-        );
+        String newAccessToken = jwtTokenService.createToken(user.getUsername(), user.getId());
+        String newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-        return new AuthResponse(newAccessToken, newRefreshToken.getToken());
+        return new AuthResponse(newAccessToken, newRefreshToken);
     }
 }
