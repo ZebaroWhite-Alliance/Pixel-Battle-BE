@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'ua.cn.stu.pixel-battle' is invalid and this project uses 'ua.cn.stu.pixel_battle' instead.
+* The original package name 'ua.cn.stu.pixel-battle' is invalid and this project uses 'ua.cn.stu.pixelbattle' instead.
 
 # Getting Started
 
