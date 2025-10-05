@@ -44,17 +44,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String header = req.getHeader("Authorization");
     if (header != null && header.startsWith("Bearer ")) {
       String token = header.substring(7);
-      if (jwtTokenService.validateToken(token)) {
-        Long userId = jwtTokenService.getUserId(token);
-        CustomUserDetails userDetails = jwtTokenService.loadUserById(userId);
-        UsernamePasswordAuthenticationToken auth =
-            new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+      try {
+        if (jwtTokenService.validateToken(token)) {
+          Long userId = jwtTokenService.getUserId(token);
+          CustomUserDetails userDetails = jwtTokenService.loadUserById(userId);
+          UsernamePasswordAuthenticationToken auth =
+              new UsernamePasswordAuthenticationToken(
+                  userDetails,
+                  null,
+                  userDetails.getAuthorities());
+
+          SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+      }catch (Exception ex) {
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        res.setContentType("application/json");
+        res.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Access token expired or invalid\"}");
+        return;
       }
     }
+
     chain.doFilter(req, res);
   }
 
