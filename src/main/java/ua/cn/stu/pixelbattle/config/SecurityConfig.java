@@ -1,5 +1,6 @@
 package ua.cn.stu.pixelbattle.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,7 @@ public class SecurityConfig {
   private static final String[] PUBLIC_URLS = {
       "/swagger-ui/**",
       "/api/v1/auth/register",
+      "/api/v1/session",
       "/api/v1/auth/login",
       "/api/v1/auth/refresh",
       "/api/v1/actuator/health",
@@ -77,8 +79,16 @@ public class SecurityConfig {
             .requestMatchers(PROTECTED_URLS).authenticated()
             .anyRequest().authenticated()
         )
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((req, res, authEx) -> {
+              res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+              res.setContentType("application/json");
+              res.getWriter().write(
+                  "{\"error\":\"Unauthorized\",\"message\":\"Access token missing or invalid\"}"
+              );
+            })
+        );
     return http.build();
   }
 

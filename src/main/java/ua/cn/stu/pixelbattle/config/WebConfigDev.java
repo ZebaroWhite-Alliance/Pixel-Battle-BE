@@ -6,20 +6,18 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Web configuration class that customizes MVC settings.
- *
- * <p>Specifically, it configures Cross-Origin Resource Sharing (CORS)
- * to allow requests from all origins and standard HTTP methods.
+ * CORS configuration for development (Postman / local testing).
+ * Allows all origins and methods without credentials.
  */
 @Configuration
-@Profile("prod")
-public class WebConfig implements WebMvcConfigurer {
+@Profile("dev")
+public class WebConfigDev implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-        .allowedOriginPatterns("https://pixel-battle.zebaro.dev")
-        .allowedMethods("GET", "POST", "PUT", "DELETE")
+        .allowedOriginPatterns("*")
+        .allowedMethods("*")
         .allowedHeaders("*")
-        .allowCredentials(true);
+        .allowCredentials(false);
   }
 }

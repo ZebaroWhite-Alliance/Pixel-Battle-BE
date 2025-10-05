@@ -93,4 +93,15 @@ public class AuthService {
 
     return new AuthResponse(newAccessToken, newRefreshToken);
   }
+
+  /**
+   * Logs out a user by invalidating the provided refresh token.
+   *
+   * @param refreshTokenStr the refresh token to delete; may be null or blank
+   */
+  public void logout(String refreshTokenStr) {
+    if (refreshTokenStr != null && !refreshTokenStr.isBlank()) {
+      refreshTokenService.deleteByToken(refreshTokenStr);
+    }
+  }
 }
