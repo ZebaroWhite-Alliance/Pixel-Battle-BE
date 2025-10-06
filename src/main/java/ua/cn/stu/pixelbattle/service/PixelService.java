@@ -6,11 +6,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import ua.cn.stu.pixelbattle.config.GameProperties;
+import ua.cn.stu.pixelbattle.dto.GameInfoResponse;
 import ua.cn.stu.pixelbattle.dto.PixelResponse;
 import ua.cn.stu.pixelbattle.exception.RateLimitException;
 import ua.cn.stu.pixelbattle.model.Pixel;
@@ -18,8 +21,6 @@ import ua.cn.stu.pixelbattle.model.PixelHistory;
 import ua.cn.stu.pixelbattle.model.User;
 import ua.cn.stu.pixelbattle.repository.PixelHistoryRepository;
 import ua.cn.stu.pixelbattle.repository.UserRepository;
-
-
 
 
 /**
@@ -41,10 +42,8 @@ public class PixelService {
   private final PixelHistoryRepository pixelHistoryRepository;
   private final UserRepository userRepository;
   private final SimpMessagingTemplate messagingTemplate;
+  private final GameProperties gameProperties;
 
-
-  private static final int FIELD_WIDTH = 1000;
-  private static final int FIELD_HEIGHT = 1000;
   private static final String USER_RATE_KEY_PREFIX = "user:rate:";
 
   /**
@@ -71,7 +70,12 @@ public class PixelService {
    * @throws RateLimitException       if a non-admin user tries to change more than once per minute
    */
   public void changePixel(int x, int y, String newColor, Long userId) {
-    if (x < 0 || x >= FIELD_WIDTH || y < 0 || y >= FIELD_HEIGHT) {
+    int fieldWidth = gameProperties.getWidth();
+    int fieldHeight = gameProperties.getHeight();
+    int cooldownSeconds = gameProperties.getCooldown();
+
+
+    if (x < 0 || x >= fieldWidth || y < 0 || y >= fieldHeight) {
       throw new IllegalArgumentException("Coordinates out of bounds");
     }
 
@@ -81,7 +85,7 @@ public class PixelService {
     if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
       String rateKey = USER_RATE_KEY_PREFIX + userId;
       Boolean allowed = stringRedisTemplate.opsForValue()
-          .setIfAbsent(rateKey, "1", 1, TimeUnit.MINUTES);
+          .setIfAbsent(rateKey, "1", cooldownSeconds, TimeUnit.SECONDS);
 
       if (Boolean.FALSE.equals(allowed)) {
         throw new RateLimitException("You can change pixel only once per minute");
@@ -137,5 +141,21 @@ public class PixelService {
     } catch (Exception e) {
       throw new RuntimeException("Unable to connect to Redis: " + e.getMessage(), e);
     }
+
+
   }
+
+  /**
+   * Retrieves general game information such as field size and cooldown.
+   *
+   * @return a {@link GameInfoResponse} containing width, height, and cooldown (in seconds)
+   */
+  public GameInfoResponse getGameInfo() {
+    return new GameInfoResponse(
+        gameProperties.getWidth(),
+        gameProperties.getHeight(),
+        gameProperties.getCooldown()
+    );
+  }
+
 }

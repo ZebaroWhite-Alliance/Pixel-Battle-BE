@@ -11,6 +11,11 @@ management:
       exposure:
         include: health
 
+game:
+  width: 1000
+  height: 1000
+  cooldown: 10
+
 jwt:
   secret: ${JWT_SECRET}
   access-token-duration-ms: 300000
