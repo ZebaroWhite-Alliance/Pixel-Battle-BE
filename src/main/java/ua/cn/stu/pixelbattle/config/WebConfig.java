@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-        .allowedOriginPatterns("https://pixel-battle.zebaro.dev", "http://localhost:3000")
+        .allowedOriginPatterns("https://pixel-battle.zebaro.dev", "http://localhost:80")
         .allowedMethods("GET", "POST", "PUT", "DELETE")
         .allowedHeaders("*")
         .allowCredentials(true);
