@@ -2,6 +2,7 @@ package ua.cn.stu.pixelbattle.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,9 +52,12 @@ public class PixelController {
   @PostMapping("/change")
   public ResponseEntity<Void> changePixel(@RequestBody PixelChangeRequest request,
                                           @AuthenticationPrincipal CustomUserDetails user) {
+
+    if (user == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     pixelService.changePixel(request.getX(), request.getY(), request.getColor(), user.getId());
-
-
     return ResponseEntity.ok().build();
   }
 }
