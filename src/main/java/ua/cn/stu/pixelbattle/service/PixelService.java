@@ -105,14 +105,14 @@ public class PixelService {
     Pixel newPixel = new Pixel(x, y, newColor, user.getUsername());
     redisTemplate.opsForValue().set(key, newPixel);
 
-    PixelResponse response = new PixelResponse(x, y, newColor, user.getUsername());
+    PixelResponse response = new PixelResponse(x, y, newColor);
     messagingTemplate.convertAndSend("/topic/pixels", response);
   }
 
   /**
    * Retrieves all pixels from Redis and converts them to DTOs.
    *
-   * @return list of {@link PixelResponse} containing pixel coordinates, color, and username
+   * @return list of {@link PixelResponse} containing pixel coordinates, color
    * @throws RuntimeException if unable to connect to Redis or retrieve pixel data
    */
   public List<PixelResponse> getAllPixels() {
@@ -132,7 +132,7 @@ public class PixelService {
             }
           })
           .filter(Objects::nonNull)
-          .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor(), p.getUsername()))
+          .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor()))
           .collect(Collectors.toList());
     } catch (Exception e) {
       throw new RuntimeException("Unable to connect to Redis: " + e.getMessage(), e);

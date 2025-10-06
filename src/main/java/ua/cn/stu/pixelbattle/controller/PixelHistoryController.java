@@ -62,7 +62,7 @@ public class PixelHistoryController {
     return new PixelResponse(
         history.getX(),
         history.getY(),
-        history.getNewColor(),
-        history.getUser().getUsername());
+        history.getNewColor()
+    );
   }
 }
