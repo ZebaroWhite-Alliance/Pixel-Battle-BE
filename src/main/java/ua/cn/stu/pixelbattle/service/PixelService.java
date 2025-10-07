@@ -5,12 +5,13 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ua.cn.stu.pixelbattle.config.GameProperties;
 import ua.cn.stu.pixelbattle.dto.GameInfoResponse;
 import ua.cn.stu.pixelbattle.dto.PixelResponse;
-import ua.cn.stu.pixelbattle.exception.RateLimitException;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.Pixel;
 import ua.cn.stu.pixelbattle.model.PixelHistory;
 import ua.cn.stu.pixelbattle.model.User;
@@ -62,7 +63,7 @@ public class PixelService {
    * @param newColor the new color to set
    * @param userId   the ID of the user making the change
    * @throws IllegalArgumentException if coordinates are out of bounds or user is not found
-   * @throws RateLimitException       if a non-admin user tries to change more than once per minute
+   * @throws ApiException       if a non-admin user tries to change more than once per minute
    */
   public void changePixel(int x, int y, String newColor, Long userId) {
     int fieldWidth = gameProperties.getWidth();
@@ -82,7 +83,7 @@ public class PixelService {
           .setIfAbsent(rateKey, "1", cooldownSeconds, TimeUnit.SECONDS);
 
       if (Boolean.FALSE.equals(allowed)) {
-        throw new RateLimitException("You can change pixel only once per minute");
+        throw new ApiException("Wait 10 seconds before updating pixel", HttpStatus.TOO_MANY_REQUESTS);
       }
     }
 

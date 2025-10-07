@@ -21,10 +21,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
   /**
+   * Handles {@link ApiException}, allowing custom HTTP status and message.
+   */
+  @ExceptionHandler(ApiException.class)
+  public ResponseEntity<Map<String, Object>> handleApiException(ApiException ex) {
+    Map<String, Object> body = new HashMap<>();
+    body.put("timestamp", LocalDateTime.now());
+    body.put("status", ex.getStatus().value());
+    body.put("error", ex.getStatus().getReasonPhrase());
+    body.put("message", ex.getMessage());
+    return new ResponseEntity<>(body, ex.getStatus());
+  }
+
+  /**
    * Handles {@link IllegalArgumentException} exceptions.
-   *
-   * @param ex the exception thrown
-   * @return ResponseEntity with status 400 and a structured error body
    */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
@@ -37,29 +47,8 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles {@link RateLimitException} exceptions.
-   *
-   * @param ex the exception thrown
-   * @return ResponseEntity with status 429 and a structured error body
-   */
-  @ExceptionHandler(RateLimitException.class)
-  public ResponseEntity<Map<String, Object>> handleRateLimit(RateLimitException ex) {
-    Map<String, Object> body = new HashMap<>();
-    body.put("timestamp", LocalDateTime.now());
-    body.put("status", HttpStatus.TOO_MANY_REQUESTS.value());
-    body.put("error", "Too Many Requests");
-    body.put("message", ex.getMessage());
-    return new ResponseEntity<>(body, HttpStatus.TOO_MANY_REQUESTS);
-  }
-
-  /**
    * Handles {@link MethodArgumentNotValidException} exceptions triggered by
    * Bean Validation failures (e.g., @NotBlank, @Pattern, @Size).
-   *
-   * <p>Returns a structured JSON with a map of field-specific errors.
-   *
-   * @param ex the thrown MethodArgumentNotValidException
-   * @return ResponseEntity with HTTP 400 and structured error body including field errors
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidationExceptions(
@@ -82,10 +71,6 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles invalid credentials during login.
-   * Returns HTTP 401 with a JSON containing timestamp, status, error, and message.
-   *
-   * @param ex the thrown BadCredentialsException
-   * @return ResponseEntity with HTTP 401
    */
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
@@ -99,9 +84,6 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles all other uncaught exceptions.
-   *
-   * @param ex the exception thrown
-   * @return ResponseEntity with status 500 and a structured error body
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleOtherExceptions(Exception ex) {
