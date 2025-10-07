@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -47,6 +50,51 @@ public class GlobalExceptionHandler {
     body.put("error", "Too Many Requests");
     body.put("message", ex.getMessage());
     return new ResponseEntity<>(body, HttpStatus.TOO_MANY_REQUESTS);
+  }
+
+  /**
+   * Handles {@link MethodArgumentNotValidException} exceptions triggered by
+   * Bean Validation failures (e.g., @NotBlank, @Pattern, @Size).
+   *
+   * <p>Returns a structured JSON with a map of field-specific errors.
+   *
+   * @param ex the thrown MethodArgumentNotValidException
+   * @return ResponseEntity with HTTP 400 and structured error body including field errors
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, Object>> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
+
+    Map<String, String> fieldErrors = new HashMap<>();
+    for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+      fieldErrors.put(error.getField(), error.getDefaultMessage());
+    }
+
+    Map<String, Object> body = new HashMap<>();
+    body.put("timestamp", LocalDateTime.now());
+    body.put("status", HttpStatus.BAD_REQUEST.value());
+    body.put("error", "Bad Request");
+    body.put("message", "Validation failed");
+    body.put("fields", fieldErrors);
+
+    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handles invalid credentials during login.
+   * Returns HTTP 401 with a JSON containing timestamp, status, error, and message.
+   *
+   * @param ex the thrown BadCredentialsException
+   * @return ResponseEntity with HTTP 401
+   */
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+    Map<String, Object> body = new HashMap<>();
+    body.put("timestamp", LocalDateTime.now());
+    body.put("status", HttpStatus.UNAUTHORIZED.value()); // 401
+    body.put("error", "Unauthorized");
+    body.put("message", ex.getMessage());
+    return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
   }
 
   /**
