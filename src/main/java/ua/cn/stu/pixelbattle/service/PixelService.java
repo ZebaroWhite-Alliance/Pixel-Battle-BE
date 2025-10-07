@@ -1,12 +1,7 @@
 package ua.cn.stu.pixelbattle.service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -74,7 +69,6 @@ public class PixelService {
     int fieldHeight = gameProperties.getHeight();
     int cooldownSeconds = gameProperties.getCooldown();
 
-
     if (x < 0 || x >= fieldWidth || y < 0 || y >= fieldHeight) {
       throw new IllegalArgumentException("Coordinates out of bounds");
     }
@@ -122,22 +116,21 @@ public class PixelService {
   public List<PixelResponse> getAllPixels() {
     try {
       Set<String> keys = redisTemplate.keys("pixel:*");
-      if (keys == null) {
+      if (keys == null || keys.isEmpty()) {
         return Collections.emptyList();
       }
 
-      return keys.stream()
-          .map(k -> {
-            try {
-              return redisTemplate.opsForValue().get(k);
-            } catch (Exception e) {
-              throw new RuntimeException(
-                  "Failed to get key " + k + " from Redis: " + e.getMessage(), e);
-            }
-          })
+      List<Pixel> pixels = redisTemplate.opsForValue().multiGet(keys)
+          .stream()
           .filter(Objects::nonNull)
+          .toList();
+
+      List<PixelResponse> responses = pixels.stream()
           .map(p -> new PixelResponse(p.getX(), p.getY(), p.getColor()))
-          .collect(Collectors.toList());
+          .toList();
+
+      return responses;
+
     } catch (Exception e) {
       throw new RuntimeException("Unable to connect to Redis: " + e.getMessage(), e);
     }
@@ -148,7 +141,7 @@ public class PixelService {
   /**
    * Retrieves general game information such as field size and cooldown.
    *
-   * @return a {@link GameInfoResponse} containing width, height, and cooldown (in seconds)
+   * @return a {@link GameInfoResponse} containing width, height, cooldown (in seconds) and batch
    */
   public GameInfoResponse getGameInfo() {
     return new GameInfoResponse(
