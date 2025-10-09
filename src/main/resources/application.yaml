@@ -14,7 +14,7 @@ management:
 game:
   width: 1000
   height: 1000
-  cooldown: 10
+  cooldown: 1
 
 jwt:
   secret: ${JWT_SECRET}
