@@ -24,7 +24,6 @@ import ua.cn.stu.pixelbattle.service.JwtTokenService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-  private final JwtTokenService jwtTokenService;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   private static final String[] PUBLIC_URLS = {
@@ -38,6 +37,7 @@ public class SecurityConfig {
       "/api/v1/pixel/**",
       "/api/v1/history",
       "/api/v1/history/**",
+      "/api/v1/info",
       "/ws/**",
       "/topic/**",
       "/app/**",
@@ -52,12 +52,9 @@ public class SecurityConfig {
   /**
    * Constructs a SecurityConfig instance with required JWT services.
    *
-   * @param jwtTokenService         the service for creating and verifying JWT tokens
    * @param jwtAuthenticationFilter the filter that validates JWTs in incoming requests
    */
-  public SecurityConfig(JwtTokenService jwtTokenService,
-                        JwtAuthenticationFilter jwtAuthenticationFilter) {
-    this.jwtTokenService = jwtTokenService;
+  public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
