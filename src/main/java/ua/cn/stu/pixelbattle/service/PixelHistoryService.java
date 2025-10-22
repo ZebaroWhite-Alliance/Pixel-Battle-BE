@@ -27,6 +27,7 @@ public class PixelHistoryService {
 
   private final PixelHistoryRepository repository;
 
+  // OPTIMIZE - add pagination
   /**
    * Retrieves all pixel history entries with ID greater than the specified value.
    *
@@ -58,8 +59,8 @@ public class PixelHistoryService {
     return history.stream()
         .map(h -> new PixelHistoryDto(
             h.getId(),
-            h.getX(),
-            h.getY(),
+            h.getCoordinateX(),
+            h.getCoordinateY(),
             h.getNewColor()
 
         ))

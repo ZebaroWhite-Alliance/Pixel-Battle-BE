@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Pixel {
-  private int x;
-  private int y;
+  private int coordinateX;
+  private int coordinateY;
   private String color;
   private String username;
 }
