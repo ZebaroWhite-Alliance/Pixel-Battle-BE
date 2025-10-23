@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ua.cn.stu.pixelbattle.dto.UserSessionResponse;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.service.SessionService;
 
 /**
@@ -36,15 +37,7 @@ public class SessionController {
    */
   @GetMapping("/session")
   public ResponseEntity<UserSessionResponse> getSession(HttpServletRequest request) {
-    try {
-      UserSessionResponse response = sessionService.getSessionResponse(request);
-      if (response == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-      }
-      return ResponseEntity.ok(response);
-    } catch (Exception ex) {
-      // service may throw when token invalid/expired — treat as unauthorized
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
+    UserSessionResponse response = sessionService.getSessionResponse(request);
+    return ResponseEntity.ok(response);
   }
 }

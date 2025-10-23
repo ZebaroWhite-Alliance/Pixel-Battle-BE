@@ -1,8 +1,10 @@
 package ua.cn.stu.pixelbattle.controller;
 
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import ua.cn.stu.pixelbattle.service.PixelHistoryService;
 @RestController
 @RequestMapping("/api/v1/history")
 @RequiredArgsConstructor
+@Validated
 public class PixelHistoryController {
 
   private final PixelHistoryService service;
@@ -31,7 +34,7 @@ public class PixelHistoryController {
    * @return a list of {@link PixelResponse} representing pixel updates
    */
   @GetMapping("/after/{id}")
-  public List<PixelResponse> getAllAfter(@PathVariable Long id) {
+  public List<PixelResponse> getAllAfter(@PathVariable @Min(0) Long id) {
     return service.getAllAfterId(id).stream()
         .map(this::mapToResponse)
         .toList();
@@ -60,8 +63,8 @@ public class PixelHistoryController {
    */
   private PixelResponse mapToResponse(PixelHistory history) {
     return new PixelResponse(
-        history.getX(),
-        history.getY(),
+        history.getCoordinateX(),
+        history.getCoordinateY(),
         history.getNewColor()
     );
   }

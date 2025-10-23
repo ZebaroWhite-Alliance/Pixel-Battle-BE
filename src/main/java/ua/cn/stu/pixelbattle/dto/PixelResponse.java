@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PixelResponse {
-  private int x;
-  private int y;
+  private int coordinateX;
+  private int coordinateY;
   private String color;
 }

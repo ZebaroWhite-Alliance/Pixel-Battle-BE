@@ -1,5 +1,8 @@
 package ua.cn.stu.pixelbattle.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 /**
@@ -10,7 +13,11 @@ import lombok.Data;
  */
 @Data
 public class PixelChangeRequest {
-  private int x;
-  private int y;
+  @Min(0)
+  private int coordinateX;
+  @Min(0)
+  private int coordinateY;
+  @NotBlank
+  @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "Color must be in hex format like #FFFFFF")
   private String color;
 }

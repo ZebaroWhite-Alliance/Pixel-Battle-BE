@@ -56,7 +56,6 @@ public class UserController {
    * @return {@link ResponseEntity} containing:
    *     <ul>
    *     <li>List of {@link PixelHistoryDto} if history exists</li>
-   *     <li>HTTP 404 Not Found if no history exists</li>
    *     <li>HTTP 401 Unauthorized if no user is authenticated</li>
    *     </ul>
    */
@@ -64,10 +63,6 @@ public class UserController {
   public ResponseEntity<?> getPixelHistory(@AuthenticationPrincipal CustomUserDetails userDetails) {
     if (userDetails != null) {
       List<PixelHistoryDto> history = pixelHistoryService.getHistoryByUserId(userDetails.getId());
-      if (history.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body("No pixel history found for this user.");
-      }
       return ResponseEntity.ok(history);
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");

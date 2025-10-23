@@ -3,8 +3,10 @@ package ua.cn.stu.pixelbattle.service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ua.cn.stu.pixelbattle.dto.UserSessionResponse;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.User;
 
 /**
@@ -41,30 +43,32 @@ public class SessionService {
   public UserSessionResponse getSessionResponse(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
     if (cookies == null) {
-      return null;
+      throw new ApiException("No cookies found", HttpStatus.UNAUTHORIZED);
     }
 
-    String refreshToken = null;
-    for (Cookie cookie : cookies) {
-      if ("refreshToken".equals(cookie.getName())) {
-        refreshToken = cookie.getValue();
-        break;
-      }
-    }
-    if (refreshToken == null) {
-      return null;
+    String refreshToken = extractRefreshToken(cookies);
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw new ApiException("Missing refresh token", HttpStatus.UNAUTHORIZED);
     }
 
     Long userId = refreshTokenService.verifyExpiration(refreshToken);
     if (userId == null) {
-      return null;
+      throw new ApiException("Refresh token invalid or expired", HttpStatus.UNAUTHORIZED);
     }
 
-    User user = userService.getUserById(userId).orElse(null);
-    if (user == null) {
-      return null;
-    }
+    User user = userService.getUserById(userId)
+        .orElseThrow(() -> new ApiException("User not found", HttpStatus.UNAUTHORIZED));
 
     return new UserSessionResponse(user.getId(), user.getUsername());
+  }
+
+
+  private String extractRefreshToken(Cookie[] cookies) {
+    for (Cookie cookie : cookies) {
+      if ("refreshToken".equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+    return null;
   }
 }

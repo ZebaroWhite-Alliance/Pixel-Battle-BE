@@ -2,6 +2,7 @@ package ua.cn.stu.pixelbattle.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ua.cn.stu.pixelbattle.dto.AuthRequest;
 import ua.cn.stu.pixelbattle.dto.AuthResponse;
 import ua.cn.stu.pixelbattle.dto.RegisterRequest;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.User;
 import ua.cn.stu.pixelbattle.repository.UserRepository;
 
@@ -82,11 +84,15 @@ public class AuthService {
    * @throws RuntimeException if the refresh token is invalid or user not found
    */
   public AuthResponse refreshToken(String refreshTokenStr) {
+    if (refreshTokenStr == null || refreshTokenStr.isBlank()) {
+      throw new ApiException("Missing refresh token", HttpStatus.UNAUTHORIZED);
+    }
+
     Long userId = refreshTokenService.verifyExpiration(refreshTokenStr);
     refreshTokenService.deleteByToken(refreshTokenStr);
 
     User user = userRepo.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     String newAccessToken = jwtTokenService.createToken(user.getUsername(), user.getId());
     String newRefreshToken = refreshTokenService.createRefreshToken(user.getId());

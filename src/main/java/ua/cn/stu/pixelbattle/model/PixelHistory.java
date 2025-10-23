@@ -30,15 +30,20 @@ public class PixelHistory {
    * Constructs a PixelHistory with coordinates, old and new color, and the user.
    * The ID and timestamp will be set automatically by JPA/Hibernate.
    *
-   * @param x        the X coordinate of the pixel
-   * @param y        the Y coordinate of the pixel
+   * @param coordinateX        the X coordinate of the pixel
+   * @param coordinateY        the Y coordinate of the pixel
    * @param oldColor the previous color of the pixel
    * @param newColor the new color of the pixel
    * @param user     the user who made the change
    */
-  public PixelHistory(int x, int y, String oldColor, String newColor, User user) {
-    this.x = x;
-    this.y = y;
+  public PixelHistory(
+      int coordinateX,
+      int coordinateY,
+      String oldColor,
+      String newColor,
+      User user) {
+    this.coordinateX = coordinateX;
+    this.coordinateY = coordinateY;
     this.oldColor = oldColor;
     this.newColor = newColor;
     this.user = user;
@@ -49,9 +54,9 @@ public class PixelHistory {
   private Long id;
 
   @Column(nullable = false)
-  private int x;
+  private int coordinateX;
   @Column(nullable = false)
-  private int y;
+  private int coordinateY;
   private String oldColor;
 
   @Column(name = "new_color", length = 7)

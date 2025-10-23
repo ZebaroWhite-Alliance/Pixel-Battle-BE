@@ -13,7 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class PixelHistoryDto {
   private Long id;
-  private int x;
-  private int y;
+  private int coordinateX;
+  private int coordinateY;
   private String newColor;
 }
