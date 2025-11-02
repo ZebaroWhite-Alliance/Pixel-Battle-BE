@@ -73,15 +73,17 @@ public class PixelService {
     int fieldHeight = gameProperties.getHeight();
     int cooldownSeconds = gameProperties.getCooldown();
 
-    if (coordinateX < 0
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+    if (coordinateX <= 0
         || coordinateX >= fieldWidth
-        || coordinateY < 0
+        || coordinateY <= 0
         || coordinateY >= fieldHeight) {
       throw new IllegalArgumentException("Coordinates out of bounds");
     }
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
 
     if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
       String rateKey = USER_RATE_KEY_PREFIX + userId;
@@ -90,7 +92,7 @@ public class PixelService {
 
       if (Boolean.FALSE.equals(allowed)) {
         throw new ApiException(
-            "Wait 10 seconds before updating pixel", HttpStatus.TOO_MANY_REQUESTS);
+            "Wait 1 seconds before updating pixel", HttpStatus.TOO_MANY_REQUESTS);
       }
     }
 
