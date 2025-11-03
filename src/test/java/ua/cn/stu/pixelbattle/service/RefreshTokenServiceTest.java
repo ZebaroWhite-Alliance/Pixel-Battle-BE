@@ -27,6 +27,17 @@ import ua.cn.stu.pixelbattle.config.JwtProperties;
 import ua.cn.stu.pixelbattle.model.User;
 import ua.cn.stu.pixelbattle.repository.UserRepository;
 
+/**
+ * Unit tests for {@link RefreshTokenService}.
+ *
+ * <p>Uses Mockito to mock dependencies like {@link StringRedisTemplate} and
+ * {@link ua.cn.stu.pixelbattle.repository.UserRepository}. Tests cover:
+ * <ul>
+ *     <li>Creating and storing refresh tokens</li>
+ *     <li>Verifying token expiration</li>
+ *     <li>Deleting tokens by token or by user ID</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenServiceTest {
 

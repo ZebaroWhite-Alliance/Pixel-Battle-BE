@@ -32,7 +32,10 @@ import ua.cn.stu.pixelbattle.service.AuthService;
 
 /**
  * Unit tests for {@link AuthController}.
- * Verifies authentication, registration, refresh and logout endpoints.
+ *
+ * <p>Verifies all main authentication endpoints:
+ * registration, login, token refresh, and logout.
+ * Methods follow the style: should[ExpectedBehavior]When[Condition].
  */
 @WebMvcTest(
     controllers = AuthController.class,
@@ -54,8 +57,8 @@ public class AuthControllerTest {
   // ------------------REGISTER----------------
 
   @Test
-  @DisplayName("POST /auth/register success (201, sets cookie)")
-  void register_success() throws Exception {
+  @DisplayName("should register new user successfully and set refresh cookie")
+  void shouldRegisterUserSuccessfullyWhenValidRequest() throws Exception {
     when(authService.login(any(AuthRequest.class)))
         .thenReturn(new AuthResponse("access", "refresh"));
 
@@ -71,8 +74,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/register username taken then 400 JSON error")
-  void register_usernameTaken_returns400() throws Exception {
+  @DisplayName("should return 400 when username is already taken")
+  void shouldReturn400WhenUsernameAlreadyTaken() throws Exception {
     doThrow(new IllegalArgumentException("Username already taken"))
         .when(authService).register(any(RegisterRequest.class));
 
@@ -87,8 +90,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/register return 400 when password is too weak")
-  void register_whenPasswordWeak_returns400() throws Exception {
+  @DisplayName("should return 400 when password is too weak")
+  void shouldReturn400WhenPasswordIsWeak() throws Exception {
     String weakPasswordJson = """
         {
           "username": "testuser",
@@ -109,8 +112,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/register  unexpected error and catch 500 JSON error")
-  void register_unexpectedError_returns500() throws Exception {
+  @DisplayName("should return 500 when unexpected error occurs during registration")
+  void shouldReturn500WhenUnexpectedErrorDuringRegistration() throws Exception {
     doThrow(new RuntimeException("Unexpected failure"))
         .when(authService).register(any(RegisterRequest.class));
 
@@ -128,8 +131,8 @@ public class AuthControllerTest {
   // ------------------LONGIN------------------
 
   @Test
-  @DisplayName("POST /auth/login success (coed 200, returns tokens and sets cookie)")
-  void login_success() throws Exception {
+  @DisplayName("should login successfully and set refresh cookie")
+  void shouldLoginSuccessfullyWhenValidCredentials() throws Exception {
     when(authService.login(any(AuthRequest.class)))
         .thenReturn(new AuthResponse("access-token", "refresh-token"));
 
@@ -146,8 +149,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/login - invalid password then 401 JSON error")
-  void login_invalidPassword_returns401() throws Exception {
+  @DisplayName("should return 401 when password is invalid")
+  void shouldReturn401WhenPasswordInvalid() throws Exception {
     doThrow(new org.springframework.security.authentication
         .BadCredentialsException("Invalid password"))
         .when(authService).login(any(AuthRequest.class));
@@ -164,8 +167,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/login - user not found and 404 JSON error")
-  void login_userNotFound_returns404() throws Exception {
+  @DisplayName("should return 404 when user not found")
+  void shouldReturn404WhenUserNotFoundOnLogin() throws Exception {
     doThrow(new org.springframework.security.core.userdetails
         .UsernameNotFoundException("User not found"))
         .when(authService).login(any(AuthRequest.class));
@@ -184,8 +187,8 @@ public class AuthControllerTest {
 
   // ------------------REFRESH------------------
   @Test
-  @DisplayName("POST /auth/refresh - success, returns new access token and sets refresh cookie")
-  void refreshToken_success() throws Exception {
+  @DisplayName("should refresh token successfully and set new refresh cookie")
+  void shouldRefreshTokenSuccessfullyWhenValid() throws Exception {
     when(authService.refreshToken("oldRefresh"))
         .thenReturn(new AuthResponse("newAccess", "newRefresh"));
 
@@ -198,8 +201,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/refresh - missing or blank refresh token and 401 err")
-  void refreshToken_missingToken_returns401() throws Exception {
+  @DisplayName("should return 401 when refresh token is missing")
+  void shouldReturn401WhenRefreshTokenMissing() throws Exception {
     when(authService.refreshToken(null))
         .thenThrow(new ApiException("Missing refresh token", HttpStatus.UNAUTHORIZED));
 
@@ -210,8 +213,8 @@ public class AuthControllerTest {
 
   // ------------------LOGOUT------------------
   @Test
-  @DisplayName("POST /auth/logout - success, clears refresh cookie")
-  void logout_success() throws Exception {
+  @DisplayName("should logout successfully and clear refresh cookie")
+  void shouldLogoutSuccessfullyWhenCookiePresent() throws Exception {
     mockMvc.perform(post("/api/v1/auth/logout")
             .cookie(new Cookie("refreshToken", "someToken")))
         .andExpect(status().isOk())
@@ -224,8 +227,8 @@ public class AuthControllerTest {
   }
 
   @Test
-  @DisplayName("POST /auth/logout - no cookie still returns 200")
-  void logout_noCookie_returns200() throws Exception {
+  @DisplayName("should logout successfully even if no cookie present")
+  void shouldLogoutSuccessfullyWhenNoCookie() throws Exception {
     mockMvc.perform(post("/api/v1/auth/logout"))
         .andExpect(status().isOk());
 

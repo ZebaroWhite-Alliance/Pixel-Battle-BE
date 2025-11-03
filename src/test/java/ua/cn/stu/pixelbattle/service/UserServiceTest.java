@@ -32,7 +32,6 @@ public class UserServiceTest {
   @InjectMocks
   UserService userService;
 
-
   @Test
   @DisplayName("should return user when user exists by ID")
   void shouldReturnUserWhenExistsById() {

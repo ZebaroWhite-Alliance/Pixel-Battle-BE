@@ -3,19 +3,16 @@ package ua.cn.stu.pixelbattle.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.cn.stu.pixelbattle.config.JwtProperties;
@@ -23,6 +20,13 @@ import ua.cn.stu.pixelbattle.model.User;
 import ua.cn.stu.pixelbattle.repository.UserRepository;
 import ua.cn.stu.pixelbattle.security.CustomUserDetails;
 
+/**
+ * Unit tests for {@link JwtTokenService}.
+ *
+ * <p>Tests JWT token creation, validation, and user loading.
+ * Uses mocks for {@link UserRepository} and {@link JwtProperties} to isolate
+ * the service logic from external dependencies.
+ */
 @ExtendWith(MockitoExtension.class)
 public class JwtTokenServiceTest {
 
@@ -58,9 +62,6 @@ public class JwtTokenServiceTest {
     assertEquals(userId, jwtTokenService.getUserId(token));
   }
 
-  private void assertNotNull(String token) {
-
-  }
 
   @Test
   @DisplayName("should return false when token is invalid")

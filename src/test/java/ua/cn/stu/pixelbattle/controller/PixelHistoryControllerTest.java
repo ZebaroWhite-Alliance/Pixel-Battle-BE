@@ -24,7 +24,9 @@ import ua.cn.stu.pixelbattle.service.PixelHistoryService;
 
 
 /**
- * Tests for PixelHistoryController.
+ * Unit tests for {@link PixelHistoryController}.
+ *
+ * <p>Verifies the /history/after/{id} endpoint for valid, invalid, and edge case requests.
  */
 @WebMvcTest(
     controllers = PixelHistoryController.class,
@@ -44,8 +46,8 @@ public class PixelHistoryControllerTest {
 
   // ---------- getAllAfter ----------
   @Test
-  @DisplayName("GET /api/v1/history/after/{id} — success when valid id")
-  void getAllAfter_success() throws Exception {
+  @DisplayName("should return pixel history successfully when valid id is provided")
+  void shouldReturnPixelHistorySuccessfullyWhenValidId() throws Exception {
     PixelHistory pixel = new PixelHistory();
     pixel.setCoordinateX(1);
     pixel.setCoordinateY(2);
@@ -62,15 +64,15 @@ public class PixelHistoryControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/history/after/{id} — bad request when id is negative")
-  void getAllAfter_negativeId() throws Exception {
+  @DisplayName("should return 400 Bad Request when id is negative")
+  void shouldReturn400WhenIdIsNegative() throws Exception {
     mockMvc.perform(get("/api/v1/history/after/-5"))
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  @DisplayName("GET /api/v1/history/after/{id}  empty result when id is too large")
-  void getAllAfter_tooLargeId() throws Exception {
+  @DisplayName("should return empty list when id is larger than any existing record")
+  void shouldReturnEmptyListWhenIdIsTooLarge() throws Exception {
     when(pixelHistoryService.getAllAfterId(2000L)).thenReturn(List.of());
 
     mockMvc.perform(get("/api/v1/history/after/2000"))

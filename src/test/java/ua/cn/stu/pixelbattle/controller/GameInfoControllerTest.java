@@ -20,8 +20,11 @@ import ua.cn.stu.pixelbattle.security.JwtAuthenticationFilter;
 import ua.cn.stu.pixelbattle.service.PixelService;
 
 /**
- * Unit tests for GameInfoController.
- * Tests the /info endpoint for correct JSON response.
+ * Unit tests for {@link GameInfoController}.
+ *
+ * <p>Verifies the /info endpoint for returning correct game information
+ * as JSON response. Follows the style:
+ * should[ExpectedBehavior]When[Condition].
  */
 @WebMvcTest(GameInfoController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -37,8 +40,8 @@ public class GameInfoControllerTest {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Test
-  @DisplayName("GET /info — returns 200 and JSON")
-  void getGameInfo_success() throws Exception {
+  @DisplayName("should return game info successfully when /info is called")
+  void shouldReturnGameInfoSuccessfullyWhenEndpointCalled() throws Exception {
 
 
     GameInfoResponse response = new GameInfoResponse(1000, 1000, 1);

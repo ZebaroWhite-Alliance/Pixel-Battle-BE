@@ -39,7 +39,10 @@ import ua.cn.stu.pixelbattle.security.JwtAuthenticationFilter;
 import ua.cn.stu.pixelbattle.service.PixelService;
 
 /**
- * Tests PixelController endpoints for getting and changing pixels.
+ * Unit tests for {@link PixelController}.
+ *
+ * <p>Verifies endpoints for retrieving and changing pixels.
+ * Tests success and failure scenarios, including authentication.
  */
 @WebMvcTest(
     controllers = PixelController.class,
@@ -62,8 +65,8 @@ public class PixelControllerTest {
 
   // -------------- GET ALL PIXEL -------------------
   @Test
-  @DisplayName("GET /api/v1/pixel - returns list of all pixels")
-  void getAllPixels_success() throws Exception {
+  @DisplayName("should return all pixels successfully when /api/v1/pixel is called")
+  void shouldReturnAllPixelsSuccessfullyWhenEndpointCalled() throws Exception {
 
     List<PixelResponse> mockPixels = List.of(
         new PixelResponse(0, 0, "#FFFFFF"),
@@ -82,8 +85,8 @@ public class PixelControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/pixel - returns empty list")
-  void getAllPixels_empty() throws Exception {
+  @DisplayName("should return empty list when there are no pixels")
+  void shouldReturnEmptyListWhenNoPixelsExist() throws Exception {
     when(pixelService.getAllPixels()).thenReturn(List.of());
 
     mockMvc.perform(get("/api/v1/pixel"))
@@ -96,8 +99,8 @@ public class PixelControllerTest {
 
   @Test
   @WithMockUser(username = "testUser", roles = "USER")
-  @DisplayName("POST /api/v1/pixel/change - success when authenticated")
-  void changePixel_success() throws Exception {
+  @DisplayName("should change pixel successfully when authenticated")
+  void shouldChangePixelSuccessfullyWhenAuthenticated() throws Exception {
     PixelChangeRequest request = new PixelChangeRequest();
     request.setCoordinateX(10);
     request.setCoordinateY(20);
@@ -122,8 +125,8 @@ public class PixelControllerTest {
   }
 
   @Test
-  @DisplayName("POST /api/v1/pixel/change - unauthorized user returns 401")
-  void changePixel_unauthorized() throws Exception {
+  @DisplayName("should return 401 unauthorized when trying to change pixel without authentication")
+  void shouldReturn401WhenChangingPixelWithoutAuthentication() throws Exception {
     PixelChangeRequest request = new PixelChangeRequest();
     request.setCoordinateX(10);
     request.setCoordinateY(20);

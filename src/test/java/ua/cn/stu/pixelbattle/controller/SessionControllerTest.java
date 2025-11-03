@@ -24,8 +24,10 @@ import ua.cn.stu.pixelbattle.security.JwtAuthenticationFilter;
 import ua.cn.stu.pixelbattle.service.SessionService;
 
 /**
- * Tests for SessionController.
- * Checks the /session endpoint for different scenarios.
+ * Unit tests for {@link SessionController}.
+ *
+ * <p>Verifies the /session endpoint behavior for valid sessions,
+ * unauthorized access, and unexpected server errors.
  */
 @WebMvcTest(
     controllers = SessionController.class,
@@ -44,8 +46,8 @@ public class SessionControllerTest {
   private SessionService sessionService;
 
   @Test
-  @DisplayName("GET /session — return 200 and JSON when the session is valid")
-  void getSession_whenValidSession_returns200AndJson() throws Exception {
+  @DisplayName("should return 200 and session JSON when session is valid")
+  void shouldReturn200AndSessionJsonWhenSessionIsValid() throws Exception {
     UserSessionResponse response = new UserSessionResponse(5L, "Hugo");
     when(sessionService.getSessionResponse(any(HttpServletRequest.class))).thenReturn(response);
 
@@ -57,8 +59,8 @@ public class SessionControllerTest {
   }
 
   @Test
-  @DisplayName("GET /session — return 401 when service throws ApiException")
-  void getSession_whenServiceThrowsApiException_returns401() throws Exception {
+  @DisplayName("should return 401 when session is invalid or expired")
+  void shouldReturn401WhenSessionIsInvalidOrExpired() throws Exception {
     when(sessionService.getSessionResponse(any(HttpServletRequest.class)))
         .thenThrow(new ApiException("Invalid or expired token",
             org.springframework.http.HttpStatus.UNAUTHORIZED));
@@ -71,8 +73,8 @@ public class SessionControllerTest {
   }
 
   @Test
-  @DisplayName("GET /session — return 500 when service throws generic RuntimeException")
-  void getSession_whenServiceThrowsRuntimeException_returns500() throws Exception {
+  @DisplayName("should return 500 when unexpected runtime exception occurs")
+  void shouldReturn500WhenUnexpectedRuntimeExceptionOccurs() throws Exception {
     when(sessionService.getSessionResponse(any(HttpServletRequest.class)))
         .thenThrow(new RuntimeException("Unexpected failure"));
 
