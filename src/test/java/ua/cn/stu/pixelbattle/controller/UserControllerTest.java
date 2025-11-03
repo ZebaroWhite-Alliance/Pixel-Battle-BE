@@ -28,10 +28,11 @@ import ua.cn.stu.pixelbattle.service.PixelHistoryService;
 
 
 /**
- * Unit tests for UserController.
- * Tests endpoints for current user info and user pixel history.
+ * Unit tests for {@link UserController}.
+ *
+ * <p>Verifies endpoints for current user info (/user/me) and user's pixel history (/user/history),
+ * including authenticated access, unauthorized access, and empty history responses.
  */
-
 @WebMvcTest(
     controllers = UserController.class,
     excludeFilters = {
@@ -62,8 +63,8 @@ public class UserControllerTest {
 
   // -------------- GET USER INFO -------------------
   @Test
-  @DisplayName("GET /api/v1/user/me - returns user info")
-  void getCurrentUser_success() throws Exception {
+  @DisplayName("should return 200 and current user info when authenticated")
+  void shouldReturn200AndCurrentUserInfoWhenAuthenticated() throws Exception {
     authenticateTestUser();
 
 
@@ -77,8 +78,8 @@ public class UserControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/user/me - unauthorized user returns 401")
-  void getCurrentUser_unauthorized() throws Exception {
+  @DisplayName("should return 401 when requesting current user info without authentication")
+  void shouldReturn401WhenRequestingCurrentUserInfoWithoutAuthentication() throws Exception {
 
     mockMvc.perform(get("/api/v1/user/me"))
         .andExpect(status().isUnauthorized());
@@ -87,8 +88,8 @@ public class UserControllerTest {
 
   // -------------- GET USER HISTORY -------------------
   @Test
-  @DisplayName("GET /api/v1/user/history - returns user history of pixels")
-  void getUserHistory_success() throws Exception {
+  @DisplayName("should return 200 and user pixel history when authenticated")
+  void shouldReturn200AndUserPixelHistoryWhenAuthenticated() throws Exception {
     authenticateTestUser();
 
 
@@ -116,8 +117,8 @@ public class UserControllerTest {
 
 
   @Test
-  @DisplayName("GET /api/v1/user/history - returns user history of pixels when list is empty")
-  void getUserHistory_isEmpty() throws Exception {
+  @DisplayName("should return 200 and empty list when user has no pixel history")
+  void shouldReturn200AndEmptyListWhenUserHasNoPixelHistory() throws Exception {
     authenticateTestUser();
 
 
@@ -129,8 +130,8 @@ public class UserControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/user/history - unauthorized returns 401")
-  void getUserHistory_unauthorized() throws Exception {
+  @DisplayName("should return 401 when requesting user history without authentication")
+  void shouldReturn401WhenRequestingUserHistoryWithoutAuthentication() throws Exception {
     mockMvc.perform(get("/api/v1/user/history"))
         .andExpect(status().isUnauthorized());
   }

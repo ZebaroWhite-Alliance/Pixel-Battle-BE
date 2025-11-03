@@ -21,8 +21,15 @@ import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.User;
 
 /**
- * Unit tests for {@link SessionService} using Mockito.
- * Tests user session validation logic and edge cases.
+ * Unit tests for {@link SessionService}.
+ *
+ * <p>Verifies main session-related scenarios:
+ * <ul>
+ *   <li>Valid token handling and response creation</li>
+ *   <li>Error handling when cookies or tokens are missing</li>
+ *   <li>Handling expired or invalid tokens</li>
+ *   <li>Handling user-not-found scenarios</li>
+ * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 public class SessionServiceTest {
@@ -40,8 +47,8 @@ public class SessionServiceTest {
   private SessionService sessionService;
 
   @Test
-  @DisplayName("Returns UserSessionResponse when the token is valid")
-  void getSessionResponseReturnsUserSessionWhenTokenValid() {
+  @DisplayName("should return UserSessionResponse when token is valid")
+  void shouldReturnUserSessionResponseWhenTokenIsValid() {
     Cookie[] cookies = { new Cookie("refreshToken", "abc123") };
     when(request.getCookies()).thenReturn(cookies);
     when(refreshTokenService.verifyExpiration("abc123")).thenReturn(1L);
@@ -62,8 +69,8 @@ public class SessionServiceTest {
   }
 
   @Test
-  @DisplayName("Throws an ApiException if there are no cookies")
-  void getSessionResponseThrowsWhenNoCookies() {
+  @DisplayName("should throw ApiException when no cookies found")
+  void shouldThrowWhenNoCookiesFound() {
     when(request.getCookies()).thenReturn(null);
 
     ApiException ex = assertThrows(ApiException.class,
@@ -74,8 +81,8 @@ public class SessionServiceTest {
   }
 
   @Test
-  @DisplayName("Throws an ApiException if refreshToken is missing")
-  void getSessionResponseThrowsWhenMissingRefreshToken() {
+  @DisplayName("should throw ApiException when refresh token is missing")
+  void shouldThrowWhenRefreshTokenIsMissing() {
     Cookie[] cookies = { new Cookie("otherCookie", "123") };
     when(request.getCookies()).thenReturn(cookies);
 
@@ -86,8 +93,8 @@ public class SessionServiceTest {
   }
 
   @Test
-  @DisplayName("Throws an ApiException if the token is invalid or has expired.")
-  void getSessionResponseThrowsWhenTokenInvalid() {
+  @DisplayName("should throw ApiException when token is invalid or expired")
+  void shouldThrowWhenTokenIsInvalidOrExpired() {
     Cookie[] cookies = { new Cookie("refreshToken", "expiredToken") };
     when(request.getCookies()).thenReturn(cookies);
     when(refreshTokenService.verifyExpiration("expiredToken")).thenReturn(null);
@@ -99,8 +106,8 @@ public class SessionServiceTest {
   }
 
   @Test
-  @DisplayName("Throws an ApiException if the user is not found.")
-  void getSessionResponseThrowsWhenUserNotFound() {
+  @DisplayName("should throw ApiException when user not found")
+  void shouldThrowWhenUserNotFoundOnSession() {
     Cookie[] cookies = { new Cookie("refreshToken", "abc123") };
     when(request.getCookies()).thenReturn(cookies);
     when(refreshTokenService.verifyExpiration("abc123")).thenReturn(42L);

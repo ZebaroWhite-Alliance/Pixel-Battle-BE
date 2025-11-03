@@ -26,6 +26,17 @@ import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.User;
 import ua.cn.stu.pixelbattle.repository.UserRepository;
 
+/**
+ * Unit tests for {@link AuthService}.
+ *
+ * <p>Verifies main authentication scenarios:
+ * <ul>
+ *   <li>User registration and duplicate username handling</li>
+ *   <li>Login success and invalid credentials</li>
+ *   <li>Token refresh flow and error cases</li>
+ *   <li>Logout behavior</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
   @Mock
@@ -43,10 +54,10 @@ public class AuthServiceTest {
   @InjectMocks
   AuthService authService;
 
-// ----------REGISTER-----------------
+  // ----------REGISTER-----------------
   @Test
-  @DisplayName("reg")
-  void registerSuccess() {
+  @DisplayName("should register new user successfully")
+  void shouldRegisterNewUserSuccessfully() {
     RegisterRequest registerRequest = new RegisterRequest("user", "123456Abc*");
 
     when(userRepository.existsByUsername("user")).thenReturn(false);
@@ -57,8 +68,8 @@ public class AuthServiceTest {
   }
 
   @Test
-  @DisplayName("registerUserExist")
-  void registerUserExist() {
+  @DisplayName("should throw when username already exists")
+  void shouldThrowWhenUsernameAlreadyExists() {
     RegisterRequest registerRequest = new RegisterRequest(
         "userExist", "123456Abc*");
 
@@ -75,9 +86,8 @@ public class AuthServiceTest {
   // -------------------LOGIN--------------------------
 
   @Test
-  @DisplayName("Successful login")
-  void loginSuccess() {
-    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
+  @DisplayName("should login successfully with correct credentials")
+  void shouldLoginSuccessfullyWithCorrectCredentials() {
     User mockUser = new User();
     mockUser.setId(1L);
     mockUser.setUsername("user");
@@ -88,6 +98,7 @@ public class AuthServiceTest {
     when(jwtTokenService.createToken("user", 1L)).thenReturn("access-token");
     when(refreshTokenService.createRefreshToken(1L)).thenReturn("refresh-token");
 
+    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
     AuthResponse response = authService.login(authRequest);
 
     assertEquals("access-token", response.getToken());
@@ -98,11 +109,11 @@ public class AuthServiceTest {
   }
 
   @Test
-  @DisplayName("Login User not found")
-  void loginUserNotFound() {
-    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
+  @DisplayName("should throw when user not found")
+  void shouldThrowWhenUserNotFoundOnLogin() {
     when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
 
+    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
     UsernameNotFoundException ex =  assertThrows(UsernameNotFoundException.class,
         () -> authService.login(authRequest));
     assertEquals("User not found", ex.getMessage());
@@ -110,9 +121,8 @@ public class AuthServiceTest {
   }
 
   @Test
-  @DisplayName("login password is incorrect")
-  void loginPasswordIncorrect() {
-    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
+  @DisplayName("should throw when password is incorrect")
+  void shouldThrowWhenPasswordIsIncorrect() {
 
     User mockUser = new User();
     mockUser.setId(1L);
@@ -123,7 +133,7 @@ public class AuthServiceTest {
     when(passwordEncoder.matches("123456Abc*",
         "encodedPass")).thenReturn(false);
 
-
+    AuthRequest authRequest = new AuthRequest("user", "123456Abc*");
     BadCredentialsException ex = assertThrows(
         BadCredentialsException.class,
         () -> authService.login(authRequest)
@@ -135,8 +145,8 @@ public class AuthServiceTest {
   // -------------REFRESH-----------------
 
   @Test
-  @DisplayName("successRefreshToken")
-  void successRefreshToken() {
+  @DisplayName("should refresh tokens successfully")
+  void shouldRefreshTokensSuccessfully() {
     String oldRefreshToken = "oldRefresh123";
 
     User mockUser = new User();
@@ -163,8 +173,8 @@ public class AuthServiceTest {
 
 
   @Test
-  @DisplayName("RefreshTokenEmpty")
-  void RefreshTokenIsEmpty() {
+  @DisplayName("should throw when refresh token is missing")
+  void shouldThrowWhenRefreshTokenIsMissing() {
 
     ApiException ex = assertThrows(ApiException.class,
         () -> authService.refreshToken(null));
@@ -173,8 +183,8 @@ public class AuthServiceTest {
   }
 
   @Test
-  @DisplayName("refreshTokenUserNotFound")
-  void userNotFound() {
+  @DisplayName("should throw when user not found on refresh")
+  void shouldThrowWhenUserNotFoundOnRefresh() {
 
     when(refreshTokenService.verifyExpiration("token")).thenReturn(1L);
     when(userRepository.findById(1L)).thenReturn(Optional.empty());
@@ -189,8 +199,8 @@ public class AuthServiceTest {
 
   // ----------------------LOGOUT---------------------------------
   @Test
-  @DisplayName("authLogoutSuccess")
-  void authLogoutSuccess() {
+  @DisplayName("should logout successfully")
+  void shouldLogoutSuccessfully() {
     String refreshToken = "Refresh123";
     authService.logout(refreshToken);
 
@@ -199,8 +209,8 @@ public class AuthServiceTest {
 
 
   @Test
-  @DisplayName("authLogoutRefreshTokenNull")
-  void authLogoutRefreshTokenNull() {
+  @DisplayName("should skip logout when token is null or empty")
+  void shouldSkipLogoutWhenTokenIsNullOrEmpty() {
     authService.logout(null);
     authService.logout("");
     verify(refreshTokenService, never()).deleteByToken(any());

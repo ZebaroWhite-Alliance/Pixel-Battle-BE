@@ -8,11 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -22,13 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -120,8 +115,8 @@ public class PixelServiceTest {
 
   // -------------------GET PIXEL----------------------------------
   @Test
-  @DisplayName("successGetPixel")
-  void successGetPixel() {
+  @DisplayName("should return pixel when found")
+  void shouldReturnPixelWhenFound() {
 
     Pixel pixel = new Pixel(1, 2, "#FF0000", "user");
     when(valueOperations.get("pixel:1:2")).thenReturn(pixel);
@@ -135,8 +130,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("getPixelIsNull")
-  void getPixelIsNull() {
+  @DisplayName("should return null when pixel not found")
+  void shouldReturnNullWhenPixelNotFound() {
     when(valueOperations.get("pixel:1:2")).thenReturn(null);
 
     Pixel result = pixelService.getPixel(1, 2);
@@ -146,15 +141,15 @@ public class PixelServiceTest {
   // -------------------------CHANGE PIXEL--------------------------
 
   @Test
-  @DisplayName("Should throw when coordinates are out of bounds")
-  void shouldThrowWhenCoordinatesAreOutOfBounds() {
+  @DisplayName("should throw when coordinates out of bounds")
+  void shouldThrowWhenCoordinatesOutOfBounds() {
     assertThrows(IllegalArgumentException.class, () ->
         pixelService.changePixel(-1, -1, "#FFF000", 1L)
     );
   }
 
   @Test
-  @DisplayName("Should throw when user not found")
+  @DisplayName("should throw when user not found")
   void shouldThrowWhenUserNotFound() {
     when(userRepository.findById(1L)).thenReturn(Optional.empty());
     IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -164,8 +159,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("sameColorNoAction")
-  void sameColorNoAction() {
+  @DisplayName("should do nothing when color is the same")
+  void shouldDoNothingWhenSameColor() {
     User user = new User();
     user.setUsername("user");
     user.setId(1L);
@@ -186,8 +181,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("User successfully changes pixel")
-  void changePixelSuccess() {
+  @DisplayName("should change pixel successfully")
+  void shouldChangePixelSuccessfully() {
     User user = new User();
     user.setId(1L);
     user.setUsername("user");
@@ -221,8 +216,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("Should throw ApiException when user changes pixel too quickly")
-  void shouldThrowApiExceptionWhenCooldownNotExpired() {
+  @DisplayName("should throw when cooldown not expired")
+  void shouldThrowWhenCooldownNotExpired() {
     User user = new User();
     user.setId(1L);
     user.setUsername("user");
@@ -239,8 +234,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("changePixel sets new color and saves history when old pixel is null")
-  void changePixelOldColorNull() {
+  @DisplayName("should change pixel when old pixel is null")
+  void shouldChangePixelWhenOldPixelIsNull() {
     User user = new User();
     user.setId(1L);
     user.setUsername("user");
@@ -264,8 +259,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("ADMIN can change pixel without cooldown")
-  void changePixelAdminNoCooldown() {
+  @DisplayName("should allow admin to change pixel without cooldown")
+  void shouldAllowAdminToChangePixelWithoutCooldown() {
     User admin = new User();
     admin.setId(1L);
     admin.setUsername("adminUser");
@@ -289,8 +284,8 @@ public class PixelServiceTest {
   // -------------------GET ALL PIXELS----------------------------------
 
   @Test
-  @DisplayName("getAllPixels returns empty list when keys are null or empty")
-  void getAllPixels_emptyKeys() {
+  @DisplayName("should return empty list when no pixels exist")
+  void shouldReturnEmptyListWhenNoPixelsExist() {
     when(redisTemplate.keys("pixel:*")).thenReturn(Collections.emptySet());
 
     var result = pixelService.getAllPixels();
@@ -303,8 +298,8 @@ public class PixelServiceTest {
 
 
   @Test
-  @DisplayName("getAllPixels returns list of PixelResponse when data exists")
-  void getAllPixels_success() {
+  @DisplayName("should return list of pixels when data exists")
+  void shouldReturnListOfPixelsWhenDataExists() {
     Set<String> keys = Set.of("pixel:1:1", "pixel:2:2");
 
     Pixel pixel1 = new Pixel(1, 1, "#FFFFFF", "user1");
@@ -323,8 +318,8 @@ public class PixelServiceTest {
   }
 
   @Test
-  @DisplayName("getAllPixels throws RuntimeException when Redis fails")
-  void getAllPixels_exception() {
+  @DisplayName("should throw RuntimeException on Redis error")
+  void shouldThrowRuntimeExceptionOnRedisError() {
     when(redisTemplate.keys("pixel:*")).thenThrow(new RuntimeException("Redis error"));
 
     RuntimeException ex = assertThrows(RuntimeException.class, () -> pixelService.getAllPixels());
@@ -337,8 +332,8 @@ public class PixelServiceTest {
   // -------------------GET GAME INFO----------------------------------
 
   @Test
-  @DisplayName("getGameInfo returns correct data from GameProperties")
-  void getGameInfo_success() {
+  @DisplayName("should return game info successfully")
+  void shouldReturnGameInfoSuccessfully() {
     when(gameProperties.getWidth()).thenReturn(200);
     when(gameProperties.getHeight()).thenReturn(300);
     when(gameProperties.getCooldown()).thenReturn(15);
