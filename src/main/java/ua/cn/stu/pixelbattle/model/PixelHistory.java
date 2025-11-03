@@ -53,9 +53,10 @@ public class PixelHistory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(name = "x",nullable = false)
   private int coordinateX;
-  @Column(nullable = false)
+
+  @Column(name = "y",nullable = false)
   private int coordinateY;
   private String oldColor;
 
