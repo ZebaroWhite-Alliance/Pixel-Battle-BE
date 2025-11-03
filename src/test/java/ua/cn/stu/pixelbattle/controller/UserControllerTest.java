@@ -105,14 +105,14 @@ public class UserControllerTest {
 
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$[0].id").value(1))
-        .andExpect(jsonPath("$[0].coordinateX").value(10))
-        .andExpect(jsonPath("$[0].coordinateY").value(20))
-        .andExpect(jsonPath("$[0].newColor").value("#FF0000"))
+        .andExpect(jsonPath("$[0].x").value(10))
+        .andExpect(jsonPath("$[0].y").value(20))
+        .andExpect(jsonPath("$[0].new_color").value("#FF0000"))
 
         .andExpect(jsonPath("$[1].id").value(2))
-        .andExpect(jsonPath("$[1].coordinateX").value(15))
-        .andExpect(jsonPath("$[1].coordinateY").value(25))
-        .andExpect(jsonPath("$[1].newColor").value("#00FF00"));
+        .andExpect(jsonPath("$[1].x").value(15))
+        .andExpect(jsonPath("$[1].y").value(25))
+        .andExpect(jsonPath("$[1].new_color").value("#00FF00"));
   }
 
 

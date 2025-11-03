@@ -76,9 +76,9 @@ public class PixelControllerTest {
 
     mockMvc.perform(get("/api/v1/pixel"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].coordinateX").value(0))
+        .andExpect(jsonPath("$[0].x").value(0))
         .andExpect(jsonPath("$[0].color").value("#FFFFFF"))
-        .andExpect(jsonPath("$[1].coordinateX").value(1));
+        .andExpect(jsonPath("$[1].x").value(1));
 
     verify(pixelService, times(1)).getAllPixels();
 

@@ -58,8 +58,8 @@ public class PixelHistoryControllerTest {
     mockMvc.perform(get("/api/v1/history/after/10"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$[0].coordinateX").value(1))
-        .andExpect(jsonPath("$[0].coordinateY").value(2))
+        .andExpect(jsonPath("$[0].x").value(1))
+        .andExpect(jsonPath("$[0].y").value(2))
         .andExpect(jsonPath("$[0].color").value("#FF00FF"));
   }
 
