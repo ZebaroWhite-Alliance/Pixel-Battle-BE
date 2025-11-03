@@ -35,6 +35,9 @@ jobs:
           echo "OWNER_NAME=$OWNER_NAME" >> $GITHUB_ENV
 
       # Run style checks and tests
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Run checks and tests
         run: ./gradlew check test
 
