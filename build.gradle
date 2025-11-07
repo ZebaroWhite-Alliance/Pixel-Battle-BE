@@ -64,6 +64,10 @@ dependencies {
 
 	// Docker Compose for development
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+	// JsonType for template
+	implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+
 }
 
 
