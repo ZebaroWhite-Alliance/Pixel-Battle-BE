@@ -74,7 +74,7 @@ public class PixelControllerTest {
     );
     when(pixelService.getAllPixels()).thenReturn(mockPixels);
 
-    mockMvc.perform(get("/api/v1/pixel"))
+    mockMvc.perform(get("/api/v1/pixels"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].x").value(0))
         .andExpect(jsonPath("$[0].color").value("#FFFFFF"))
@@ -89,7 +89,7 @@ public class PixelControllerTest {
   void shouldReturnEmptyListWhenNoPixelsExist() throws Exception {
     when(pixelService.getAllPixels()).thenReturn(List.of());
 
-    mockMvc.perform(get("/api/v1/pixel"))
+    mockMvc.perform(get("/api/v1/pixels"))
         .andExpect(status().isOk())
         .andExpect(content().json("[]"));
   }
@@ -114,7 +114,7 @@ public class PixelControllerTest {
         new TestingAuthenticationToken(userDetails, null, "ROLE_USER")
     );
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/pixel/change")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/pixels")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
             .with(csrf()))
@@ -133,7 +133,7 @@ public class PixelControllerTest {
     request.setColor("#FF0000");
 
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/pixel/change")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/pixels")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
             .with(csrf()))

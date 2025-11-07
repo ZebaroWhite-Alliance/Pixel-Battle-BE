@@ -40,7 +40,7 @@ public class GameInfoControllerTest {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Test
-  @DisplayName("should return game info successfully when /info is called")
+  @DisplayName("should return game info successfully when /gameinfo is called")
   void shouldReturnGameInfoSuccessfullyWhenEndpointCalled() throws Exception {
 
 
@@ -48,7 +48,7 @@ public class GameInfoControllerTest {
     when(pixelService.getGameInfo()).thenReturn(response);
 
 
-    mockMvc.perform(get("/api/v1/info"))
+    mockMvc.perform(get("/api/v1/gameinfo"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.width").value(1000))
