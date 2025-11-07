@@ -2,6 +2,7 @@ package ua.cn.stu.pixelbattle.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import ua.cn.stu.pixelbattle.model.Template;
 import ua.cn.stu.pixelbattle.security.CustomUserDetails;
 import ua.cn.stu.pixelbattle.service.TemplateService;
@@ -66,12 +68,12 @@ public class TemplateController {
    *
    * @param id the unique identifier of the template
    * @return the corresponding {@link Template} instance
-   * @throws RuntimeException if the template is not found
+   * @throws ResponseStatusException if the template is not found
    */
   @GetMapping("/{id}")
   public Template getTemplateById(@PathVariable Long id) {
     return templateService.getTemplateById(id)
-        .orElseThrow(() -> new RuntimeException("Template not found"));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Template not found"));
   }
 
   /**

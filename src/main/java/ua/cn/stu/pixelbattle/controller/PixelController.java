@@ -22,7 +22,7 @@ import ua.cn.stu.pixelbattle.service.PixelService;
  * <p>Provides endpoints to retrieve pixel board data and update pixels.
  */
 @RestController
-@RequestMapping("/api/v1/pixel")
+@RequestMapping("/api/v1/pixels")
 @RequiredArgsConstructor
 public class PixelController {
 
@@ -46,7 +46,7 @@ public class PixelController {
    * @param user    the authenticated user making the change
    * @return HTTP 200 OK if the pixel was successfully updated
    */
-  @PostMapping("/change")
+  @PostMapping
   public ResponseEntity<Void> changePixel(@Valid  @RequestBody PixelChangeRequest request,
                                           @AuthenticationPrincipal CustomUserDetails user) {
 

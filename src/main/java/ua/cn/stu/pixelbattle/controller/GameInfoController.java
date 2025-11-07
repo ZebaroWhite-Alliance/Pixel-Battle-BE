@@ -20,7 +20,7 @@ import ua.cn.stu.pixelbattle.service.PixelService;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/gameinfo")
 @RequiredArgsConstructor
 public class GameInfoController {
   private final PixelService pixelService;
@@ -33,7 +33,7 @@ public class GameInfoController {
    *
    * @return a {@link GameInfoResponse} object containing current game settings
    */
-  @GetMapping("/info")
+  @GetMapping
   public GameInfoResponse getInfo() {
     return pixelService.getGameInfo();
   }
