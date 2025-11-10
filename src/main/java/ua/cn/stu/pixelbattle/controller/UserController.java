@@ -49,22 +49,4 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");
   }
 
-  /**
-   * Retrieves the pixel change history of the currently authenticated user.
-   *
-   * @param userDetails details of the authenticated user, injected by Spring Security
-   * @return {@link ResponseEntity} containing:
-   *     <ul>
-   *     <li>List of {@link PixelHistoryDto} if history exists</li>
-   *     <li>HTTP 401 Unauthorized if no user is authenticated</li>
-   *     </ul>
-   */
-  @GetMapping("/history")
-  public ResponseEntity<?> getPixelHistory(@AuthenticationPrincipal CustomUserDetails userDetails) {
-    if (userDetails != null) {
-      List<PixelHistoryDto> history = pixelHistoryService.getHistoryByUserId(userDetails.getId());
-      return ResponseEntity.ok(history);
-    }
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");
-  }
 }

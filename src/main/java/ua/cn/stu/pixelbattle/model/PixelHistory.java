@@ -34,19 +34,19 @@ public class PixelHistory {
    * @param coordinateY        the Y coordinate of the pixel
    * @param oldColor the previous color of the pixel
    * @param newColor the new color of the pixel
-   * @param user     the user who made the change
+   * @param userId     the id of user who made the change
    */
   public PixelHistory(
       int coordinateX,
       int coordinateY,
       String oldColor,
       String newColor,
-      User user) {
+      Long userId) {
     this.coordinateX = coordinateX;
     this.coordinateY = coordinateY;
     this.oldColor = oldColor;
     this.newColor = newColor;
-    this.user = user;
+    this.userId = userId;
   }
 
   @Id
@@ -63,9 +63,8 @@ public class PixelHistory {
   @Column(name = "new_color", length = 7)
   private String newColor;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @Column(name = "user_id", nullable = false)
+  private Long userId;
 
   @Column(name = "changed_at", nullable = false, updatable = false)
   @org.hibernate.annotations.CreationTimestamp

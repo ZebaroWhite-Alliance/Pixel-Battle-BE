@@ -1,70 +1,94 @@
 package ua.cn.stu.pixelbattle.service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.cn.stu.pixelbattle.dto.PixelHistoryDto;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.PixelHistory;
 import ua.cn.stu.pixelbattle.repository.PixelHistoryRepository;
-
+import ua.cn.stu.pixelbattle.security.CustomUserDetails;
 
 
 /**
  * Service for managing pixel history records.
  *
- * <p>Provides methods to:
- * <ul>
- *     <li>Retrieve all pixel changes after a specific ID</li>
- *     <li>Retrieve the next pixel change after a specific ID</li>
- *     <li>Retrieve pixel history for a specific user as DTOs</li>
- * </ul>
+ * <p>Provides methods to retrieve pixel changes globally or for a specific user.
+ * Includes access control for non-admin users to prevent viewing other users' history.</p>
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PixelHistoryService {
 
-  private final PixelHistoryRepository repository;
+  private final PixelHistoryRepository pixelHistoryRepository;
+  private static final int MAX_LIMIT = 10_000;
 
-  // OPTIMIZE - add pagination
   /**
-   * Retrieves all pixel history entries with ID greater than the specified value.
+   * Retrieves a list of pixel history records with IDs greater than {@code fromId}.
    *
-   * @param id the ID to compare
-   * @return list of {@link PixelHistory} entries ordered by ID ascending
+   * @param fromId the starting pixel history ID (exclusive)
+   * @param limit the maximum number of records to fetch
+   * @return a list of {@link PixelHistoryDto} objects representing the pixel changes
    */
-  public List<PixelHistory> getAllAfterId(Long id) {
-    return repository.findByIdGreaterThanOrderByIdAsc(id);
+  public List<PixelHistoryDto> getAllAfter(long fromId, int limit) {
+    int safeLimit = Math.min(limit, MAX_LIMIT);
+    List<PixelHistory> entities = pixelHistoryRepository.findAllAfter(fromId, safeLimit);
+    return entities.stream().map(this::toDto).toList();
   }
 
   /**
-   * Retrieves the next pixel history entry with ID greater than the specified value.
+   * Retrieves pixel history records for a specific user.
    *
-   * @param id the ID to compare
-   * @return an {@link Optional} containing the next {@link PixelHistory}, if exists
+   * <p>If {@code userId} is {@code null}, retrieves history for the current user.
+   * Non-admin users cannot access history of other users.</p>
+   *
+   * @param currentUser the currently authenticated user; must not be {@code null}
+   * @param userId the ID of the target user, or {@code null} to fetch current user's history
+   * @param fromId the starting pixel history ID (exclusive)
+   * @param limit the maximum number of records to fetch
+   * @return a list of {@link PixelHistoryDto} objects representing the pixel changes
+   * @throws SecurityException if {@code currentUser} is {@code null}
+   * @throws ApiException if a non-admin user attempts to access another user's history
    */
-  public Optional<PixelHistory> getNextAfterId(Long id) {
-    return repository.findByIdGreaterThanOrderByIdAsc(id).stream().findFirst();
+  public List<PixelHistoryDto> getUserHistory(
+      CustomUserDetails currentUser,
+      Long userId, // can be null for ‘myself’
+      long fromId,
+      int limit
+  ) {
+    if (currentUser == null) {
+      throw new ApiException("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+    boolean isAdmin = "ADMIN".equalsIgnoreCase(currentUser.getRole());
+
+    if (!isAdmin && userId != null && !userId.equals(currentUser.getId())) {
+      throw new ApiException(
+          "Access denied: only admins can view other users history", HttpStatus.FORBIDDEN);
+    }
+
+    Long targetUserId = (userId != null) ? userId : currentUser.getId();
+
+    int safeLimit = Math.min(limit, MAX_LIMIT);
+    List<PixelHistory> entities =
+        pixelHistoryRepository.findAllByUserAfter(targetUserId, fromId, safeLimit);
+    return entities
+        .stream()
+        .map(this::toDto)
+        .toList();
   }
 
-  /**
-   * Retrieves pixel history for a specific user and converts it to DTOs.
-   *
-   * @param userId the ID of the user
-   * @return list of {@link PixelHistoryDto} representing the user's pixel changes
-   */
-  public List<PixelHistoryDto> getHistoryByUserId(Long userId) {
-    List<PixelHistory> history = repository.findByUserId(userId);
-    return history.stream()
-        .map(h -> new PixelHistoryDto(
-            h.getId(),
-            h.getCoordinateX(),
-            h.getCoordinateY(),
-            h.getNewColor()
 
-        ))
-        .collect(Collectors.toList());
+  private PixelHistoryDto toDto(PixelHistory pixelHistory) {
+    return new PixelHistoryDto(
+        pixelHistory.getId(),
+        pixelHistory.getCoordinateX(),
+        pixelHistory.getCoordinateY(),
+        pixelHistory.getNewColor()
+    );
   }
 }
 

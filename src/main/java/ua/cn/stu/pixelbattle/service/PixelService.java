@@ -107,7 +107,13 @@ public class PixelService {
     user.incrementPixelChanges();
     userRepository.save(user);
 
-    PixelHistory history = new PixelHistory(coordinateX, coordinateY, oldColor, newColor, user);
+    PixelHistory history = new PixelHistory(
+        coordinateX,
+        coordinateY,
+        oldColor,
+        newColor,
+        user.getId());
+
     pixelHistoryRepository.save(history);
 
     Pixel newPixel = new Pixel(coordinateX, coordinateY, newColor, user.getUsername());
