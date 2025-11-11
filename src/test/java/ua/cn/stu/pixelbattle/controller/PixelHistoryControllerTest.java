@@ -15,9 +15,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.cn.stu.pixelbattle.dto.PixelHistoryDto;
+import ua.cn.stu.pixelbattle.exception.ApiException;
 import ua.cn.stu.pixelbattle.model.PixelHistory;
 import ua.cn.stu.pixelbattle.security.JwtAuthenticationFilter;
 import ua.cn.stu.pixelbattle.service.PixelHistoryService;
@@ -48,35 +51,84 @@ public class PixelHistoryControllerTest {
   @Test
   @DisplayName("should return pixel history successfully when valid id is provided")
   void shouldReturnPixelHistorySuccessfullyWhenValidId() throws Exception {
-    PixelHistory pixel = new PixelHistory();
-    pixel.setCoordinateX(1);
-    pixel.setCoordinateY(2);
-    pixel.setNewColor("#FF00FF");
+    PixelHistoryDto dto = new PixelHistoryDto(1L, 1, 2, "#FF00FF");
 
-    when(pixelHistoryService.getAllAfterId(10L)).thenReturn(List.of(pixel));
+    when(pixelHistoryService.getAllAfter(10L, 10000)).thenReturn(List.of(dto));
 
-    mockMvc.perform(get("/api/v1/history/after/10"))
+    mockMvc.perform(get("/api/v1/history")
+            .param("fromId", "10"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].x").value(1))
         .andExpect(jsonPath("$[0].y").value(2))
-        .andExpect(jsonPath("$[0].color").value("#FF00FF"));
+        .andExpect(jsonPath("$[0].new_color").value("#FF00FF"));
   }
 
+
   @Test
-  @DisplayName("should return 400 Bad Request when id is negative")
-  void shouldReturn400WhenIdIsNegative() throws Exception {
-    mockMvc.perform(get("/api/v1/history/after/-5"))
+  @DisplayName("should return 400 Bad Request when fromId is negative")
+  void shouldReturn400WhenFromIdIsNegative() throws Exception {
+    when(pixelHistoryService.getAllAfter(-5L, 10000))
+        .thenThrow(new ApiException("Invalid parameters", HttpStatus.BAD_REQUEST));
+
+    mockMvc.perform(get("/api/v1/history")
+            .param("fromId", "-5"))
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  @DisplayName("should return empty list when id is larger than any existing record")
+  @DisplayName("should return empty list when fromId is larger than any existing record")
   void shouldReturnEmptyListWhenIdIsTooLarge() throws Exception {
-    when(pixelHistoryService.getAllAfterId(2000L)).thenReturn(List.of());
+    when(pixelHistoryService.getAllAfter(2000L, 10000)).thenReturn(List.of());
 
-    mockMvc.perform(get("/api/v1/history/after/2000"))
+    mockMvc.perform(get("/api/v1/history")
+            .param("fromId", "2000"))
         .andExpect(status().isOk())
         .andExpect(content().json("[]"));
   }
+
+  // ---------------------GET USER HISTORY------------------------------
+
+  @Test
+  @DisplayName("should return user pixel history successfully when valid params are provided")
+  void shouldReturnUserPixelHistorySuccessfully() throws Exception {
+    PixelHistoryDto dto = new PixelHistoryDto(1L, 5, 6, "#00FF00");
+
+    when(pixelHistoryService.getUserHistory(null, null, 10L, 1000))
+        .thenReturn(List.of(dto));
+
+    mockMvc.perform(get("/api/v1/history/user")
+            .param("fromId", "10"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].x").value(5))
+        .andExpect(jsonPath("$[0].y").value(6))
+        .andExpect(jsonPath("$[0].new_color").value("#00FF00"));
+  }
+
+  @Test
+  @DisplayName("should return 401 when current user is not authenticated")
+  void shouldReturn401WhenUserNotAuthenticated() throws Exception {
+    when(pixelHistoryService.getUserHistory(null, null, 10L, 1000))
+        .thenThrow(new ApiException("Unauthorized", HttpStatus.UNAUTHORIZED));
+
+    mockMvc.perform(get("/api/v1/history/user")
+            .param("fromId", "10"))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @DisplayName("should return 403 when non-admin user tries to access another user's history")
+  void shouldReturn403WhenUserAccessesOthersHistory() throws Exception {
+    when(pixelHistoryService.getUserHistory(null, 999L, 10L, 1000))
+        .thenThrow(new ApiException("Access denied", HttpStatus.FORBIDDEN));
+
+    mockMvc.perform(get("/api/v1/history/user")
+            .param("fromId", "10")
+            .param("userId", "999"))
+        .andExpect(status().isForbidden());
+  }
+
 }

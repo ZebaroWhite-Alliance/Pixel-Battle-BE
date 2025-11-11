@@ -34,6 +34,9 @@ public class PixelHistoryService {
    * @return a list of {@link PixelHistoryDto} objects representing the pixel changes
    */
   public List<PixelHistoryDto> getAllAfter(long fromId, int limit) {
+    if (fromId < 0 || limit < 0) {
+      throw new ApiException("Invalid parameters", HttpStatus.BAD_REQUEST);
+    }
     int safeLimit = Math.min(limit, MAX_LIMIT);
     List<PixelHistory> entities = pixelHistoryRepository.findAllAfter(fromId, safeLimit);
     return entities.stream().map(this::toDto).toList();
@@ -61,6 +64,10 @@ public class PixelHistoryService {
   ) {
     if (currentUser == null) {
       throw new ApiException("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+    if (fromId < 0 || limit < 0) {
+      throw new ApiException("Invalid parameters", HttpStatus.BAD_REQUEST);
     }
 
     boolean isAdmin = "ADMIN".equalsIgnoreCase(currentUser.getRole());
