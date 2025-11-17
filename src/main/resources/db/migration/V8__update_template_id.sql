@@ -1,0 +1,4 @@
+ALTER TABLE template
+ALTER COLUMN id TYPE BIGINT;
+
+ALTER SEQUENCE template_id_seq AS BIGINT;
