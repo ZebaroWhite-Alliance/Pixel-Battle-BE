@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Global exception handler for the application.
@@ -120,16 +121,40 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
   }
 
+  /** Handles forbidden actions (e.g., user trying to delete another user’s resource). */
+  @ExceptionHandler(SecurityException.class)
+  public ResponseEntity<Map<String, Object>> handleSecurityException(SecurityException ex) {
+    return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+  }
+
+  /** Handles missing authentication (null user in @AuthenticationPrincipal). */
+  @ExceptionHandler(NullPointerException.class)
+  public ResponseEntity<Map<String, Object>> handleNullPointerException(NullPointerException ex) {
+    return buildResponse(HttpStatus.UNAUTHORIZED, "Authentication required");
+  }
+
+  /** Passes through ResponseStatusException with its original HTTP code. */
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
+    HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+    return buildResponse(status, ex.getReason());
+  }
+
   /**
-   * Handles all other uncaught exceptions.
+   * Handles all uncaught exceptions and returns a 500 Internal Server Error response.
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleOtherExceptions(Exception ex) {
+    return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected failure");
+  }
+
+  // Utility method to build a consistent JSON body
+  private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
     Map<String, Object> body = new HashMap<>();
     body.put("timestamp", LocalDateTime.now());
-    body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-    body.put("error", "Internal Server Error");
-    body.put("message", "Unexpected failure");
-    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    body.put("status", status.value());
+    body.put("error", status.getReasonPhrase());
+    body.put("message", message);
+    return new ResponseEntity<>(body, status);
   }
 }

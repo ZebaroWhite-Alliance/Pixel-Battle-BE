@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import ua.cn.stu.pixelbattle.dto.CreateTemplateRequest;
+import ua.cn.stu.pixelbattle.dto.TemplateResponse;
 import ua.cn.stu.pixelbattle.model.Template;
 import ua.cn.stu.pixelbattle.security.CustomUserDetails;
 import ua.cn.stu.pixelbattle.service.TemplateService;
@@ -29,62 +32,34 @@ public class TemplateController {
 
   private final TemplateService templateService;
 
-  /**
-   * Creates a new template for the authenticated user.
-   *
-   * <p>The template data is provided in the request body, and the user ID is
-   * extracted from the authenticated principal.</p>
-   *
-   * @param userDetails the authenticated user details
-   * @param template the {@link Template} data to create
-   * @return the created {@link Template} instance
-   */
   @PostMapping
-  public Template createTemplate(
+  @ResponseStatus(HttpStatus.CREATED)
+  public TemplateResponse createTemplate(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestBody Template template
+      @RequestBody CreateTemplateRequest request
   ) {
-    return templateService.createTemplate(template, userDetails.getId());
+    return templateService.createTemplate(request, userDetails.getId());
   }
 
-  /**
-   * Retrieves all templates belonging to the authenticated user.
-   *
-   * <p>Each template contains its metadata and pixel data as stored in the database.</p>
-   *
-   * @param userDetails the authenticated user details
-   * @return a list of {@link Template} objects owned by the user
-   */
   @GetMapping
-  public List<Template> getMyTemplates(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public List<TemplateResponse> getMyTemplates(@AuthenticationPrincipal CustomUserDetails userDetails) {
     return templateService.getTemplatesByUserId(userDetails.getId());
   }
 
-  /**
-   * Retrieves a template by its unique identifier.
-   *
-   * <p>This endpoint does not require authentication and allows any user
-   * to view a specific template by ID.</p>
-   *
-   * @param id the unique identifier of the template
-   * @return the corresponding {@link Template} instance
-   * @throws ResponseStatusException if the template is not found
-   */
   @GetMapping("/{id}")
-  public Template getTemplateById(@PathVariable Long id) {
-    return templateService.getTemplateById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Template not found"));
+  public TemplateResponse getTemplateById(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @PathVariable Long id
+  ) {
+    return templateService.getTemplateById(id, userDetails);
   }
 
-  /**
-   * Deletes a template by its unique identifier.
-   *
-   * <p>Only the owner of the template can delete it.</p>
-   *
-   * @param id the unique identifier of the template to delete
-   */
   @DeleteMapping("/{id}")
-  public void deleteTemplate(@PathVariable Long id) {
-    templateService.deleteTemplate(id);
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteTemplate(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @PathVariable Long id
+  ) {
+    templateService.deleteTemplate(id, userDetails.getId());
   }
 }
