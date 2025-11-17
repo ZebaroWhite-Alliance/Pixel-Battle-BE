@@ -26,12 +26,4 @@ public class JwtProperties {
   @Value("${jwt.refresh-token-duration-ms:604800000}")
   private long  refreshTokenDurationMs;
 
-  /**
-   * Initialization method called after bean creation.
-   * Prints the JWT secret to the console for debugging purposes.
-   */
-  @PostConstruct
-  public void init() {
-    System.out.println("JWT secret = " + secret);
-  }
 }
