@@ -135,7 +135,8 @@ public class GlobalExceptionHandler {
 
   /** Passes through ResponseStatusException with its original HTTP code. */
   @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
+  public ResponseEntity<Map<String, Object>> handleResponseStatusException(
+      ResponseStatusException ex) {
     HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
     return buildResponse(status, ex.getReason());
   }

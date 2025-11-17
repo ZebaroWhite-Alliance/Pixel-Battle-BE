@@ -32,6 +32,13 @@ public class TemplateController {
 
   private final TemplateService templateService;
 
+  /**
+   * Creates a new template for the authenticated user.
+   *
+   * @param userDetails the authenticated user details
+   * @param request the template creation request
+   * @return the created template response
+   */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public TemplateResponse createTemplate(
@@ -41,11 +48,27 @@ public class TemplateController {
     return templateService.createTemplate(request, userDetails.getId());
   }
 
+  /**
+   * Retrieves all templates belonging to the authenticated user.
+   *
+   * @param userDetails the authenticated user details
+   * @return list of user's templates
+   */
   @GetMapping
-  public List<TemplateResponse> getMyTemplates(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public List<TemplateResponse> getMyTemplates(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     return templateService.getTemplatesByUserId(userDetails.getId());
   }
 
+  /**
+   * Retrieves a specific template by ID with access control.
+   * Users can access their own templates, admins can access any.
+   *
+   * @param userDetails the authenticated user details
+   * @param id the template ID
+   * @return the template response
+   * @throws ResponseStatusException if template not found or access denied
+   */
   @GetMapping("/{id}")
   public TemplateResponse getTemplateById(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -54,6 +77,14 @@ public class TemplateController {
     return templateService.getTemplateById(id, userDetails);
   }
 
+
+  /**
+   * Deletes a template by ID. Users can only delete their own templates.
+   *
+   * @param userDetails the authenticated user details
+   * @param id the template ID to delete
+   * @throws ResponseStatusException if template not found or access denied
+   */
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteTemplate(
