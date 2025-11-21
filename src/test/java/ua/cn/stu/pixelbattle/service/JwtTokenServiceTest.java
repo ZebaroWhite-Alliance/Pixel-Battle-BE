@@ -121,7 +121,7 @@ public class JwtTokenServiceTest {
     String token = jwtTokenService.createToken("user", 1L);
 
     // I change the real valid token
-    String brokenToken = token.substring(0, token.length() - 1) + "x";
+    String brokenToken = "xyz" + token + "xyz";
     assertFalse(jwtTokenService.validateToken(brokenToken));
   }
 }
