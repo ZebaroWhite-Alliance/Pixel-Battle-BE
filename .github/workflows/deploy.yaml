@@ -39,7 +39,13 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run checks and tests
-        run: ./gradlew check test
+        run: ./gradlew check test jacocoTestReport
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          fail_ci_if_error: true
 
       # Log in to GitHub Container Registry
       - name: Log in to GHCR
