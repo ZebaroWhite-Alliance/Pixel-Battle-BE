@@ -58,6 +58,9 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
 
+      #codecov
+      CODECOV_TOKEN: ${CODECOV_TOKEN}
+
     ports:
       - "8080:8080"
 
