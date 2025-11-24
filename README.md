@@ -49,12 +49,12 @@ Frontend (React) repository: 👉 *[here](https://github.com/ZebaroWhite-Allianc
 
 ## 🚀 Live Demo
 
-| Component | URL |
-|----------|----|
-| **Frontend App** | `http://localhost:3000` (local) |
-| **Backend API** | `http://localhost:8080` (local) |
-| **API Documentation** | `http://localhost:8080/swagger-ui.html` |
-| **Health Dashboard** | `http://localhost:8080/actuator/health` |
+| Component | URL                                          |
+|----------|----------------------------------------------|
+| **Frontend App** | `http://localhost:3000` (local)              |
+| **Backend API** | `http://localhost:8080` (local)              |
+| **API Documentation** | `http://localhost:8080/swagger-ui/index.html` |
+| **Health Dashboard** | `http://localhost:8080/actuator/health`      |
 ---
 
 ## 🚀 Quick Start
