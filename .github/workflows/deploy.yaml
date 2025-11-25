@@ -41,13 +41,19 @@ jobs:
       - name: Run checks and tests
         run: ./gradlew check test jacocoTestReport
 
+      - name: Debug Codecov env
+        run: |
+          echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+          echo "GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}"
+          echo "computed slug: ${GITHUB_REPOSITORY}"
+          # Печатаем длину токена (токен сам GitHub скрывает в логах как ****)
+          echo "CODECOV_TOKEN length: ${#CODECOV_TOKEN}"
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            slug: zebarowhite-alliance/pixel-battle-be
-            files: build/reports/jacoco/test/jacocoTestReport.xml
-            fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          fail_ci_if_error: false
 
       # Log in to GitHub Container Registry
       - name: Log in to GHCR
