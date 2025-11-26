@@ -2,10 +2,10 @@
 
 ![Build](https://img.shields.io/github/actions/workflow/status/ZebaroWhite-Alliance/Pixel-Battle-BE/deploy.yaml)
 ![Coverage](https://img.shields.io/codecov/c/gh/ZebaroWhite-Alliance/Pixel-Battle-BE)
-![Docker Pulls](https://img.shields.io/docker/pulls/zebarowhite/pixel-battle-be)
+![Docker Pulls](https://img.shields.io/docker/pulls/whitedh/pixel-battle-be)
 ![License](https://img.shields.io/github/license/ZebaroWhite-Alliance/Pixel-Battle-BE)
 ![Code Quality](https://img.shields.io/codacy/grade/6d75af562d414b3e90eed24018e16bf4)
-![Docker](https://img.shields.io/docker/v/ZebaroWhite-Alliance/Pixel-Battle-BE?label=docker%20image)
+![Docker](https://img.shields.io/docker/v/whitedh/pixel-battle-be?label=docker%20image)
 
 ![Java](https://img.shields.io/badge/java-21-blue)
 ![Spring](https://img.shields.io/badge/spring-boot_3.4.4-green)
