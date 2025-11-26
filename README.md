@@ -4,6 +4,14 @@
 ![Coverage](https://img.shields.io/codecov/c/gh/ZebaroWhite-Alliance/Pixel-Battle-BE)
 ![Docker Pulls](https://img.shields.io/docker/pulls/zebarowhite/pixel-battle-be)
 ![License](https://img.shields.io/github/license/ZebaroWhite-Alliance/Pixel-Battle-BE)
+![Code Quality](https://img.shields.io/codacy/grade/6d75af562d414b3e90eed24018e16bf4)
+![Docker](https://img.shields.io/docker/v/ZebaroWhite-Alliance/Pixel-Battle-BE?label=docker%20image)
+
+![Java](https://img.shields.io/badge/java-21-blue)
+![Spring](https://img.shields.io/badge/spring-boot_3.4.4-green)
+![Gradle](https://img.shields.io/badge/gradle-8.13-blueviolet)
+
+
 
 A full-stack real-time collaborative pixel art platform 
 where thousands of users can draw together on a shared canvas.  
@@ -16,45 +24,36 @@ Frontend (React) repository: 👉 *[here](https://github.com/ZebaroWhite-Allianc
 
 ---
 
-📚 Table of Contents
-🚀 Quick Start
-
-🎯 Live Demo
-
-✨ Features
-
-🏗️ Architecture
-
-🛠️ Tech Stack
-
-📁 Project Structure
-
-🔌 API Reference
-
-🌐 WebSocket Events
-
-🧪 Testing & Quality
-
-🗄️ Database & Storage
-
-🛠️ Development Guide
-
-🤝 Contributing
-
-❓ FAQ
-
-📄 License
+## 📚 Table of Contents
+- [🎯 Live Demo](#-live-demo)
+- [🚀 Quick Start](#-quick-start)
+- [✨ Key Features](#-key-features)
+- [🛠️ Tech Stack](#-tech-stack)
+- [📂 Project Structure](#-project-structure)
+- [🔌 API Overview](#-api-overview)
+- [🌐 WebSocket (Real-Time Updates)](#-websocket-real-time-updates)
+- [🧪 Testing & Quality](#-testing--quality)
+- [🗄️ Database & Storage](#-database--storage)
+- [⚡ Example API Responses](#-example-api-responses)
+- [🔒 Security](#-security)
+- [🤝 Contributing](#-contributing)
+- [📝 License](#-license)
 
 ---
 
-## 🚀 Live Demo
+## 🎯 Live Demo
+> ⚠️ Note: The demo depends on my personal electricity supply.  
+> to save my portable power station, the server may be temporarily turned off.
+
 
 | Component | URL                                          |
 |----------|----------------------------------------------|
-| **Frontend App** | `http://localhost:3000` (local)              |
-| **Backend API** | `http://localhost:8080` (local)              |
-| **API Documentation** | `http://localhost:8080/swagger-ui/index.html` |
-| **Health Dashboard** | `http://localhost:8080/actuator/health`      |
+| **Frontend App** | `https://pixel-battle.zebaro.dev/`              |
+| **Backend API** | `https://pixel-battle.zebaro.dev/`              |
+| **API Documentation** | `https://pixel-battle.zebaro.dev/swagger-ui/index.html` |
+| **Health Dashboard** | `https://pixel-battle.zebaro.dev/actuator/health`      |
+
+
 ---
 
 ## 🚀 Quick Start
@@ -259,6 +258,28 @@ pixel-battle-be/
 | GET    | `/api/v1/templates` | Get user's saved templates    |
 | POST   | `/api/v1/templates` | Save a new template (private) |
 
+
+> For full API documentation, including all endpoints, 
+> request & response examples, visit 
+> [Swagger](https://pixel-battle.zebaro.dev/swagger-ui/index.html)
+
+### 🧰 Postman Collection
+
+For convenient API testing, a **Postman collection** is available containing all endpoints and request examples.
+
+**How to use:**
+
+1. Open Postman.
+2. Go to `File → Import` and select the collection file:
+   `docs/postman/pixel-battle-api.postman_collection.json`
+
+3. Choose the environment (e.g., `dev`) and set variables:
+- `base_url` — your API URL (e.g., `http://localhost:8080/api/v1`)
+- `access_token` — will be populated after calling `/auth/login`
+4. You can now test all endpoints without manually entering URLs and headers.
+
+> ⚡ Tip: First execute `POST /auth/login` to obtain your `access_token`.
+
 ---
 
 ## 🌐 WebSocket (Real-Time Updates)
@@ -313,7 +334,6 @@ Tests covering REST endpoints, validation, and security:
 
 #### ✅ Service Tests
 
-Unit tests for business logic and internal functionality:
 
 - AuthServiceTest
 - JwtTokenServiceTest
@@ -330,6 +350,19 @@ Generated automatically via JaCoCo:
 build/reports/tests/test
 build/reports/jacoco/test/html
 ```
+
+### ✅ Code Style
+
+- Project follows Google Java Style
+- Checkstyle is integrated with Gradle, run it via:
+```bash
+./gradlew checkstyleMain
+./gradlew checkstyleTest
+```
+
+- IDE (IntelliJ/VSCode) can auto-format code according to Google Style
+- Ensures consistent code style across contributors
+  Unit tests for business logic and internal functionality:
 
 ## 🗄️ Database & Storage
 Pixel Battle combines Redis for real-time operations 
@@ -389,3 +422,44 @@ and history.
 - Web Security: CSRF protection and CORS are properly configured for safe API and WebSocket access.
 - Tokens: Access and Refresh JWT tokens are validated for each request and during WebSocket handshake.
 
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome!
+If you want to contribute to Pixel Battle, follow these **steps**:
+
+#### 1. Fork the repository
+
+#### 2. Create a new branch:
+
+```bash 
+git checkout -b feature/my-new-feature
+```
+
+#### 3. Make your changes and commit them:
+
+```bash
+git commit -am "feat: Add new feature"
+```
+
+####  4. Push to your branch:
+
+```bash
+git push origin feature/my-new-feature
+```
+
+#### 5. Open a Pull Request
+
+Before submitting, please ensure:
+
+- Your code follows project style rules (Spotless)
+- All tests pass (./gradlew test)
+- You added or updated tests if needed
+- Thank you for helping improve the project! 🚀
+
+## 📝 License
+
+This project is licensed under the MIT License.
+You are free to use, modify and distribute this software, as long as the license file is included.
+
+MIT © ZebaroWhite Alliance
