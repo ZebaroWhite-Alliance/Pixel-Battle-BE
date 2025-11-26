@@ -1,5 +1,7 @@
 # 🎨 Pixel Battle — Real-Time Multiplayer Pixel Art Platform
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/97d8d6e1eaa04778b03bc514a9a2a68e)](https://app.codacy.com/gh/ZebaroWhite-Alliance/Pixel-Battle-BE?utm_source=github.com&utm_medium=referral&utm_content=ZebaroWhite-Alliance/Pixel-Battle-BE&utm_campaign=Badge_Grade)
+
 ![Build](https://img.shields.io/github/actions/workflow/status/ZebaroWhite-Alliance/Pixel-Battle-BE/deploy.yaml)
 ![Coverage](https://img.shields.io/codecov/c/gh/ZebaroWhite-Alliance/Pixel-Battle-BE)
 ![Docker Pulls](https://img.shields.io/docker/pulls/zebarowhite/pixel-battle-be)
