@@ -32,19 +32,18 @@ public class SecurityConfig {
       "/api/v1/session",
       "/api/v1/auth/login",
       "/api/v1/auth/refresh",
-      "/api/v1/actuator/health",
+      "/actuator/health",
       "/api/v1/pixels",
       "/api/v1/history",
-      "/api/v1/history/**",
       "/api/v1/info",
       "/ws/**",
       "/topic/**",
       "/app/**",
-      "/v3/api-docs/**"
   };
 
   private static final String[] PROTECTED_URLS = {
       "/api/v1/current-user",
+      "/api/v1/history/**",
   };
 
   /**
