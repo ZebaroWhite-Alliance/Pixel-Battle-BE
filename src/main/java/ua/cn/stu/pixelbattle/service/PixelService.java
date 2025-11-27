@@ -76,9 +76,9 @@ public class PixelService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-    if (coordinateX <= 0
+    if (coordinateX < 0
         || coordinateX >= fieldWidth
-        || coordinateY <= 0
+        || coordinateY < 0
         || coordinateY >= fieldHeight) {
       throw new IllegalArgumentException("Coordinates out of bounds");
     }
