@@ -39,7 +39,7 @@ public class SecurityConfig {
       "/ws/**",
       "/topic/**",
       "/app/**",
-      "/v3/api-docs"
+      "/v3/api-docs/**",
   };
 
   private static final String[] PROTECTED_URLS = {
