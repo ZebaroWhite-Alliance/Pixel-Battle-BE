@@ -22,6 +22,11 @@ built with **Java + Spring Boot**, using **WebSockets**,
 
 Frontend (React) repository: 👉 *[here](https://github.com/ZebaroWhite-Alliance/Pixel-Battle-FE)*
 
+
+---
+![2025-11-27-16-18-48-_online-video-cutter com_-_1_](https://github.com/user-attachments/assets/bbdf7e5d-8b73-4db2-ae06-e3f1d8e9e1d5)
+
+
 ---
 
 ## 📚 Table of Contents
